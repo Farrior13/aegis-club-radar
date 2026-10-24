@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Aegis Club Radar — Live On-Chain Bounty & Quest Mini-App | NPC Season One</title>
+  <meta name="description" content="Aegis Club Radar: Live multi-chain bounty radar and squad quest coordinator built for NPC Season One by Aegis Labs (@aegislabs).">
+  <meta property="og:title" content="Aegis Club Radar — NPC Season One Mini-App">
+  <meta property="og:description" content="Discover live on-chain bounties across Base, Arbitrum & Ethereum, form Club squads, and verify proofs together.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://farrior13.github.io/aegis-club-radar/">
+  <meta name="fc:miniapp" content='{"version": "1", "imageUrl": "https://farrior13.github.io/aegis-club-radar/icon.svg", "button": {"title": "Open Aegis Club Radar", "action": {"type": "launch_miniapp", "name": "Aegis Club Radar", "url": "https://farrior13.github.io/aegis-club-radar/", "splashBackgroundColor": "#07080d"}}}'>
+  <link rel="icon" type="image/svg+xml" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="brand">
+        <img src="icon.svg" alt="Aegis Club Radar" class="brand-icon">
+        <div>
+          <div class="badge-row">
+            <span class="pill pill-purple">NPC SEASON ONE</span>
+            <span class="pill pill-teal">LIVE MINI-APP</span>
+            <span class="pill pill-dark">CLUB: @aegislabs</span>
+          </div>
+          <h1>Aegis Club Radar</h1>
+          <p class="subtitle">Real-Time Multi-Chain Bounty &amp; Community Quest Hub for NPC Clubs</p>
+        </div>
+      </div>
+      <div class="header-stats">
+        <div class="stat-box">
+          <span class="stat-label">RPC Status</span>
+          <span class="stat-val online" id="rpc-status">● Base / Arb / ETH Live</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">NPC Builder</span>
+          <span class="stat-val">@aegislabs</span>
+        </div>
+        <div class="stat-box">
+          <span class="stat-label">Owner Wallet</span>
+          <span class="stat-val mono">0x7152...4c07</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="tabs" role="tablist">
+      <button class="tab active" data-tab="radar">1. Live On-Chain Bounty Radar</button>
+      <button class="tab" data-tab="club">2. NPC Club &amp; Squad Coordinator</button>
+      <button class="tab" data-tab="blueprint">3. How Our Club Brings People Together</button>
+      <button class="tab" data-tab="verify">4. App Ownership &amp; Verification</button>
+    </nav>
+
+    <!-- TAB 1: LIVE RADAR -->
+    <main id="tab-radar" class="tab-panel active">
+      <div class="toolbar">
+        <div class="filter-group">
+          <button class="chip active" data-chain="all">All Chains</button>
+          <button class="chip" data-chain="base">Base Mainnet</button>
+          <button class="chip" data-chain="arbitrum">Arbitrum One</button>
+        </div>
+        <div class="search-group">
+          <input type="search" id="bounty-search" placeholder="Search live bounties (e.g. NPC, Hackathon, Wedgie, CC0)...">
+          <button id="refresh-btn" class="btn-primary">↻ Sync On-Chain RPC</button>
+        </div>
+      </div>
+
+      <div class="metrics-strip">
+        <div class="metric-card">
+          <span class="m-label">Base POIDH v3 Counter</span>
+          <span class="m-val" id="m-base-cnt">521</span>
+          <span class="m-sub">Contract 0x5555...1719</span>
+        </div>
+        <div class="metric-card">
+          <span class="m-label">Active Featured Quests</span>
+          <span class="m-val" id="m-open-cnt">8 Live</span>
+          <span class="m-sub">Direct RPC Decoded</span>
+        </div>
+        <div class="metric-card">
+          <span class="m-label">Featured Pool Value</span>
+          <span class="m-val" id="m-pool-eth">0.158 ETH</span>
+          <span class="m-sub">~$426.00 USD Verified</span>
+        </div>
+        <div class="metric-card">
+          <span class="m-label">Club Squad Readiness</span>
+          <span class="m-val">3 Channels</span>
+          <span class="m-sub">#bounties · #squads · #proofs</span>
+        </div>
+      </div>
+
+      <div id="bounty-grid" class="bounty-grid"></div>
+    </main>
+
+    <!-- TAB 2: SQUAD COORDINATOR -->
+    <section id="tab-club" class="tab-panel">
+      <div class="panel-grid">
+        <div class="card">
+          <h2>Create a Club Quest Squad</h2>
+          <p class="muted">Inside the Aegis Hunters NPC Club, members team up on technical, creative, and on-chain bounties and split rewards transparently.</p>
+          <form id="squad-form" class="squad-form">
+            <label>Target On-Chain Bounty
+              <select id="squad-bounty">
+                <option value="Base #519 — Bring Your App to NPC Hackathon (0.004284 ETH)">Base #519 — Bring Your App to NPC Hackathon (0.004284 ETH)</option>
+                <option value="Base #520 — Bring Your App to NPC Hackathon Bounty 2 (0.004284 ETH)">Base #520 — Bring Your App to NPC Hackathon Bounty 2 (0.004284 ETH)</option>
+                <option value="Base #514 — CC0 Halloween Comic (0.0565 ETH)">Base #514 — CC0 Halloween Comic (0.0565 ETH)</option>
+                <option value="Base #511 — POIDH v1 Arbitrum Data Audit (0.0185 ETH)">Base #511 — POIDH v1 Arbitrum Data Audit (0.0185 ETH)</option>
+              </select>
+            </label>
+            <label>Squad Callsign
+              <input type="text" id="squad-name" value="Alpha Hunters (@aegislabs)" required>
+            </label>
+            <label>Roles Needed in NPC Club Channel
+              <input type="text" id="squad-roles" value="Smart Contract Auditor + Visual Proof Designer" required>
+            </label>
+            <label>Reward Split Proposal
+              <input type="text" id="squad-split" value="60% Builder / 30% Auditor / 10% Club Treasury" required>
+            </label>
+            <button type="submit" class="btn-primary">+ Broadcast Squad Call to Club</button>
+          </form>
+        </div>
+        <div class="card">
+          <h2>Active Club Squads &amp; Live Claims</h2>
+          <div id="squad-list" class="squad-list"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: HOW OUR CLUB BRINGS PEOPLE TOGETHER -->
+    <section id="tab-blueprint" class="tab-panel">
+      <div class="card">
+        <h2>How Aegis Club Radar Brings Our App &amp; Community Together Through an NPC Club</h2>
+        <p class="lead">On-chain bounties are usually solo, fragmented across chains, and hard to discover in time. <strong>Aegis Club Radar</strong> turns solo bounty hunting into a multiplayer social experience inside our NPC Club:</p>
+        <div class="feature-cols">
+          <div class="f-box">
+            <span class="f-num">01</span>
+            <h3>Real-Time Discovery in Club Channels</h3>
+            <p>Our Mini-App streams newly opened bounties from Base, Arbitrum, and Ethereum directly into the Club so members never miss high-value technical, creative, or community quests.</p>
+          </div>
+          <div class="f-box">
+            <span class="f-num">02</span>
+            <h3>Multiplayer Squad Formation</h3>
+            <p>Complex bounties require code, on-chain data verification, and visual proof cards. Club members use the Squad Coordinator to pair developers with designers and share rewards.</p>
+          </div>
+          <div class="f-box">
+            <span class="f-num">03</span>
+            <h3>Peer Review &amp; Proof Verification</h3>
+            <p>Before submitting an on-chain claim, members post their draft deliverable in the Club for rapid peer review—increasing win rates and building reputation across Season One.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: OWNERSHIP & VERIFICATION -->
+    <section id="tab-verify" class="tab-panel">
+      <div class="card verify-card">
+        <h2>Cryptographic App Ownership &amp; NPC Season One Verification</h2>
+        <p class="muted">This page and repository are owned and operated by <strong>Aegis Labs (@aegislabs)</strong> for NPC Season One and POIDH Base Bounties #519 &amp; #520.</p>
+        <div class="kv-table">
+          <div class="kv-row"><span>App Name (in NPC Application):</span><strong>Aegis Club Radar</strong></div>
+          <div class="kv-row"><span>NPC Season One Applicant:</span><strong>@aegislabs (Aegis Labs · ID: 6add419b5acb89c61067)</strong></div>
+          <div class="kv-row"><span>Competition Track / Stage:</span><strong>Existing App Activation · Usable / Live</strong></div>
+          <div class="kv-row"><span>Live App URL:</span><strong><a href="https://farrior13.github.io/aegis-club-radar/">https://farrior13.github.io/aegis-club-radar/</a></strong></div>
+          <div class="kv-row"><span>Open-Source GitHub Repository:</span><strong><a href="https://github.com/Farrior13/aegis-club-radar" target="_blank" rel="noopener">https://github.com/Farrior13/aegis-club-radar</a></strong></div>
+          <div class="kv-row"><span>Owner &amp; POIDH Claimer Wallet (Base):</span><strong class="mono">0x7152F226f565C3b86943CE7B4F38E77110bD4c07</strong></div>
+          <div class="kv-row"><span>Farcaster / Mini-App Manifest:</span><strong><a href=".well-known/farcaster.json" target="_blank">/.well-known/farcaster.json</a></strong></div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-title">EIP-191 Signed Ownership Attestation (Signer: 0x7152F226f565C3b86943CE7B4F38E77110bD4c07)</div>
+          <pre>NPC Season One App Ownership Attestation
+App Name: Aegis Club Radar
+Live URL: https://farrior13.github.io/aegis-club-radar/
+GitHub Repo: https://github.com/Farrior13/aegis-club-radar
+NPC Username: @aegislabs (ID: 6add419b5acb89c61067)
+Base Wallet: 0x7152F226f565C3b86943CE7B4F38E77110bD4c07
+POIDH Base Bounties: #519 & #520
+
+Signature: 0x38e81869c3118a29f63a01841755be85a496f9d250a4ac8f235477608bf3780c684d00178f676adee9fd162fad7112250b0b0406d1b620f5faf6419d0dfde1a51c</pre>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <span><strong>Aegis Club Radar</strong> · Built by <strong>Aegis Labs (@aegislabs)</strong> for NPC Season One</span>
+      <span>Base Wallet: <code>0x7152F226f565C3b86943CE7B4F38E77110bD4c07</code> · <a href="https://github.com/Farrior13/aegis-club-radar" target="_blank" rel="noopener">GitHub Source</a></span>
+    </footer>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
