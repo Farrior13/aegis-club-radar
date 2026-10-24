@@ -1,0 +1,17 @@
+{
+  "accountAssociation": {
+    "header": "eyJ0eXBlIjogImF1dGgiLCAia2V5IjogIjB4NzE1MkYyMjZmNTY1QzNiODY5NDNDRTdCNEYzOEU3NzExMGJENGMwNyIsICJucGNVc2VybmFtZSI6ICJhZWdpc2xhYnMiLCAibnBjVXNlcklkIjogIjZhZGQ0MTliNWFjYjg5YzYxMDY3In0",
+    "payload": "eyJkb21haW4iOiAiZmFycmlvcjEzLmdpdGh1Yi5pbyIsICJhcHBVcmwiOiAiaHR0cHM6Ly9mYXJyaW9yMTMuZ2l0aHViLmlvL2FlZ2lzLWNsdWItcmFkYXIvIn0",
+    "signature": "0x38e81869c3118a29f63a01841755be85a496f9d250a4ac8f235477608bf3780c684d00178f676adee9fd162fad7112250b0b0406d1b620f5faf6419d0dfde1a51c"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Aegis Club Radar",
+    "iconUrl": "https://farrior13.github.io/aegis-club-radar/icon.svg",
+    "homeUrl": "https://farrior13.github.io/aegis-club-radar/",
+    "buttonTitle": "Launch Aegis Club Radar",
+    "splashBackgroundColor": "#07080d",
+    "subtitle": "Live On-Chain Bounty & Quest Radar for NPC Clubs",
+    "description": "Discover live POIDH v3 bounties across Base, Arbitrum, and Ethereum, form Club squads, verify on-chain proofs, and coordinate community quests inside NPC."
+  }
+}
