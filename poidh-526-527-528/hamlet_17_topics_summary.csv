@@ -1,0 +1,18 @@
+rank,slug,places_total,places_for,places_against,places_split,people_total,for_count,against_count,pct_for,pct_against,question,headline,q3_freq
+1,speed-bumps,371,,,,975,927,48,95.1,4.9,Should the city add speed bumps?,"In 352 of 371 places, most comments on speed bumps were for","Came up in 6% of meetings in Q3, down 11% from Q2"
+2,pickleball,468,,,,1241,1152,89,92.8,7.2,Should the city build pickleball courts?,"In 436 of 468 places, most comments on pickleball were for","Came up in 7% of meetings in Q3, up 34% from Q2"
+3,bike-lanes,306,,,,783,683,100,87.2,12.8,Should the city build bike lanes?,"In 271 of 305 places, most comments on bike lanes were for","Came up in 6% of meetings in Q3, down 13% from Q2"
+4,upzoning,231,,,,612,532,80,86.9,13.1,Should the city rezone to allow more homes?,"In 207 of 230 places, most comments on upzoning were for","Came up in 4% of meetings in Q3, up 6% from Q2"
+5,backyard-chickens,77,,,,165,143,22,86.7,13.3,,"In 68 of 77 places, most comments on backyard chickens were for","Came up in 0.3% of meetings in Q3, down 40% from Q2"
+6,duplexes,274,,,,676,575,101,85.1,14.9,,"In 238 of 274 places, most comments on duplexes and missing middle were for","Came up in 7% of meetings in Q3, up 16725% from Q2"
+7,speed-cameras,169,,,,452,374,78,82.7,17.3,Should the city install speed cameras?,"In 133 of 169 places, most comments on speed cameras were for","Came up in 2% of meetings in Q3, up 16% from Q2"
+8,road-diets,174,,,,401,323,78,80.5,19.5,"Should the city narrow roads to add bike lanes, sidewalks or safety features?","In 153 of 173 places, most comments on road diets were for","Came up in 0.8% of meetings in Q3, down 24% from Q2"
+9,roundabouts,252,,,,501,394,107,78.6,21.4,Should the city build roundabouts?,"In 197 of 250 places, most comments on roundabouts were for","Came up in 8% of meetings in Q3, up 0% from Q2"
+10,artificial-turf,201,,,,428,266,162,62.1,37.9,Should the city install artificial turf fields?,"In 150 of 200 places, most comments on artificial turf were for",Came up in 1% of meetings in Q3
+11,solar-power,165,,,,467,287,180,61.5,38.5,,"In 129 of 162 places, most comments on solar farms were for","Came up in 3% of meetings in Q3, down 15% from Q2"
+12,battery-storage,154,,,,418,255,163,61.0,39.0,,,"Came up in 3% of meetings in Q3, down 2% from Q2"
+13,gas-stations,171,,,,415,224,191,54.0,46.0,"Should the city allow new gas stations, including large travel centers?",,"Came up in 9% of meetings in Q3, down 5% from Q2"
+14,short-term-rentals,190,,,,696,363,333,52.2,47.8,Should the city allow short-term rentals like Airbnb and Vrbo?,,"Came up in 7% of meetings in Q3, down 7% from Q2"
+15,homeless-encampments,146,,,,377,190,187,50.4,49.6,Should the city clear homeless encampments?,,"Came up in 3% of meetings in Q3, down 22% from Q2"
+16,surveillance-cameras,448,,,,1940,506,1434,26.1,73.9,"Should the city use surveillance and license plate reader cameras, like Flock?",,"Came up in 10% of meetings in Q3, up 70% from Q2"
+17,data-centers,358,,,,2291,344,1947,15.0,85.0,Should the city allow data centers?,"In 300 of 355 places, most comments on data centers were against","Came up in 16% of meetings in Q3, up 28% from Q2"
