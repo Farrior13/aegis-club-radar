@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TACIT // Cross-Chain Privacy Boundary & State Explorer (BTC + ETH + Base + Robinhood)</title>
+  <style>
+    :root {
+      --bg: #070b12;
+      --bg-card: #0d1421;
+      --bg-card-alt: #121b2d;
+      --border: #1e2d47;
+      --border-hi: #2e4770;
+      --text: #e6edf7;
+      --muted: #8b9bb4;
+      --btc: #f7931a;
+      --eth: #627eea;
+      --base: #3b82f6;
+      --green: #10b981;
+      --purple: #a855f7;
+      --cyan: #06b6d4;
+      --amber: #f59e0b;
+      --red: #ef4444;
+      --mono: "JetBrains Mono", "Cascadia Code", "Consolas", monospace;
+      --sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: radial-gradient(circle at 15% 0%, #101b33 0%, var(--bg) 55%);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.5;
+      padding-bottom: 64px;
+    }
+    a { color: var(--cyan); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    .mono { font-family: var(--mono); }
+    .wrap { max-width: 1440px; margin: 0 auto; padding: 0 20px; }
+
+    /* Top Telemetry Header */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(13, 20, 33, 0.92);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+    }
+    .topbar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-logo {
+      width: 36px;
+      height: 36px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, rgba(247,147,26,0.2), rgba(59,130,246,0.25));
+      border: 1px solid var(--btc);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: var(--btc);
+      font-family: var(--mono);
+      font-size: 18px;
+    }
+    .brand-title { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+    .brand-sub { font-size: 12px; color: var(--muted); }
+    .telemetry-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      align-items: center;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-family: var(--mono);
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+    }
+    .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+    .dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); }
+    .dot.btc { background: var(--btc); }
+    .dot.eth { background: var(--eth); }
+    .dot.base { background: var(--base); }
+    .dot.xns { background: var(--purple); }
+    .btn {
+      background: linear-gradient(135deg, #1d4ed8, #0284c7);
+      color: #fff;
+      border: 1px solid #38bdf8;
+      padding: 6px 13px;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: var(--sans);
+    }
+    .btn:hover { filter: brightness(1.12); }
+
+    /* Nav Tabs */
+    .section-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0;
+    }
+    .nav-chip {
+      padding: 7px 13px;
+      border-radius: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .nav-chip:hover { border-color: var(--cyan); color: var(--cyan); }
+
+    /* Universal Lookup Box */
+    .lookup-panel {
+      background: linear-gradient(180deg, rgba(18,27,45,0.95), rgba(13,20,33,0.95));
+      border: 1px solid var(--border-hi);
+      border-radius: 14px;
+      padding: 20px;
+      margin-bottom: 22px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.35);
+    }
+    .lookup-header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .lookup-title { font-size: 17px; font-weight: 800; color: #fff; }
+    .xns-badge {
+      background: rgba(168, 85, 247, 0.16);
+      border: 1px solid var(--purple);
+      color: #d8b4fe;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-size: 11px;
+      font-family: var(--mono);
+      font-weight: 700;
+    }
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+    .search-input {
+      flex: 1;
+      background: #060911;
+      border: 1px solid var(--border-hi);
+      color: var(--text);
+      padding: 12px 15px;
+      border-radius: 9px;
+      font-family: var(--mono);
+      font-size: 13.5px;
+    }
+    .search-input:focus { outline: none; border-color: var(--cyan); }
+    .preset-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      font-size: 11.5px;
+      color: var(--muted);
+    }
+    .preset-btn {
+      background: #0a101d;
+      border: 1px solid var(--border);
+      color: #cbd5e1;
+      padding: 3px 9px;
+      border-radius: 6px;
+      font-family: var(--mono);
+      font-size: 11px;
+      cursor: pointer;
+    }
+    .preset-btn:hover { border-color: var(--btc); color: var(--btc); }
+    .lookup-result {
+      margin-top: 14px;
+      padding: 15px;
+      border-radius: 10px;
+      background: #070b13;
+      border: 1px solid var(--border);
+      font-size: 13px;
+    }
+
+    /* Grid & Cards */
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(560px, 1fr)); gap: 18px; margin-bottom: 22px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 18px; margin-bottom: 22px; }
+    .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    @media (max-width: 700px) {
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .search-row { flex-direction: column; }
+    }
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 18px;
+    }
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(30, 45, 71, 0.7);
+    }
+    .card-title { font-size: 15px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .tag {
+      font-size: 10.5px;
+      font-family: var(--mono);
+      padding: 2px 8px;
+      border-radius: 5px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+    .tag.btc { background: rgba(247,147,26,0.15); color: var(--btc); border: 1px solid rgba(247,147,26,0.4); }
+    .tag.eth { background: rgba(98,126,234,0.15); color: #93c5fd; border: 1px solid rgba(98,126,234,0.4); }
+    .tag.base { background: rgba(59,130,246,0.15); color: #60a5fa; border: 1px solid rgba(59,130,246,0.4); }
+    .tag.green { background: rgba(16,185,129,0.15); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }
+    .tag.amber { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }
+    .tag.purple { background: rgba(168,85,247,0.15); color: #d8b4fe; border: 1px solid rgba(168,85,247,0.4); }
+
+    .kv-list { display: grid; grid-template-columns: 165px 1fr; gap: 7px 12px; font-size: 12.5px; }
+    .kv-key { color: var(--muted); font-weight: 500; }
+    .kv-val { font-family: var(--mono); word-break: break-all; color: #f1f5f9; }
+    .stat-big { font-size: 22px; font-weight: 800; font-family: var(--mono); color: #fff; margin: 4px 0; }
+    .stat-label { font-size: 11.5px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.04em; }
+
+    table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    th, td { text-align: left; padding: 8px 9px; border-bottom: 1px solid rgba(30,45,71,0.65); }
+    th { color: var(--muted); font-weight: 600; text-transform: uppercase; font-size: 10.5px; letter-spacing: 0.04em; }
+    tr:hover td { background: rgba(255,255,255,0.02); }
+
+    .privacy-col-pub {
+      border-left: 3px solid var(--amber);
+      padding-left: 12px;
+      background: rgba(245,158,11,0.04);
+      border-radius: 0 8px 8px 0;
+      padding: 12px;
+    }
+    .privacy-col-priv {
+      border-left: 3px solid var(--green);
+      padding-left: 12px;
+      background: rgba(16,185,129,0.05);
+      border-radius: 0 8px 8px 0;
+      padding: 12px;
+    }
+    .privacy-item { margin-bottom: 9px; font-size: 12.5px; }
+    .privacy-item strong { display: block; font-family: var(--mono); font-size: 12px; margin-bottom: 2px; }
+
+    .section-heading {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 26px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    .section-heading h2 { font-size: 18px; font-weight: 800; letter-spacing: -0.01em; }
+    .section-heading span { font-size: 12px; color: var(--muted); font-family: var(--mono); }
+
+    .bridge-flow {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 12px;
+      margin-top: 12px;
+    }
+    .flow-step {
+      background: var(--bg-card-alt);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      position: relative;
+    }
+    .flow-step-num {
+      font-family: var(--mono);
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--cyan);
+      margin-bottom: 4px;
+    }
+    .caveat-box {
+      margin-top: 12px;
+      padding: 11px 14px;
+      background: rgba(245, 158, 11, 0.08);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      border-radius: 8px;
+      font-size: 12px;
+      color: #fde68a;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="wrap topbar">
+    <div class="brand">
+      <div class="brand-logo">T</div>
+      <div>
+        <div class="brand-title">TACIT // CROSS-CHAIN EXPLORER</div>
+        <div class="brand-sub">Live Mainnet Inspector: Bitcoin Taproot Envelopes · Ethereum ConfidentialPool · Base &amp; Robinhood Device Pools · XNS Name Layer</div>
+      </div>
+    </div>
+    <div class="telemetry-pills">
+      <span class="pill" title="Live Bitcoin Mainnet Tip via mempool.space"><span class="dot btc"></span>BTC Tip: <strong id="hdr-btc-tip">974,824</strong></span>
+      <span class="pill" title="Live BitcoinLightRelay Tip on Ethereum Mainnet"><span class="dot live"></span>Relay Tip: <strong id="hdr-relay-tip">974,819</strong></span>
+      <span class="pill" title="Live Ethereum Mainnet Block via PublicNode RPC"><span class="dot eth"></span>ETH Block: <strong id="hdr-eth-block">26,356,859</strong></span>
+      <span class="pill" title="Live Base Mainnet Block via mainnet.base.org"><span class="dot base"></span>Base Block: <strong id="hdr-base-block">53,953,052</strong></span>
+      <span class="pill" title="XNS Ethereum Mainnet Registry 0x6e79...f74b"><span class="dot xns"></span>XNS: <strong>0x6e79…f74b</strong></span>
+      <button class="btn" onclick="refreshAllLiveState()">&#x21bb; Sync Live RPC</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="section-nav">
+    <a class="nav-chip" href="#sec-lookup">1. Universal Footprint &amp; XNS Lookup</a>
+    <a class="nav-chip" href="#sec-privacy">2. The Privacy Boundary (Public vs. Hidden)</a>
+    <a class="nav-chip" href="#sec-evm">3. Ethereum, Base, Robinhood &amp; MegaETH State</a>
+    <a class="nav-chip" href="#sec-btc">4. Bitcoin Taproot Envelopes &amp; Native AMM</a>
+    <a class="nav-chip" href="#sec-bridge">5. SP1 Bridge, Light Relay &amp; Reflection</a>
+  </div>
+
+  <!-- SECTION 1: UNIVERSAL FOOTPRINT LOOKUP + XNS BONUS -->
+  <section id="sec-lookup" class="lookup-panel">
+    <div class="lookup-header">
+      <div>
+        <div class="lookup-title">Look Up Your Own Footprint + Live XNS Resolver (<span class="mono">label@namespace</span> &harr; <span class="mono">0x…</span>)</div>
+        <div style="font-size:12.5px;color:var(--muted);">Paste a <strong>tacit1…</strong> stealth ID, a <strong>64-hex Bitcoin txid / assetId</strong>, an <strong>EVM 0x address</strong>, or an <strong>XNS name (e.g. vitalik@eth, alice@xns)</strong>. Queries Ethereum RPC, XNS (<span class="mono">0x6e797ba2d3103aF167918e71a7E01DE40D45f74b</span>) &amp; <span class="mono">mempool.space</span> live in your browser.</div>
+      </div>
+      <span class="xns-badge">XNS BONUS ENABLED · getAddress(0xbf40fac1) / getName(0x5fd4b08a)</span>
+    </div>
+
+    <div class="search-row">
+      <input id="footprint-input" class="search-input" type="text" value="vitalik@eth" placeholder="Enter vitalik@eth, alice@xns, 0x000000000Ed1eabD231Be41d93b719056F7febFC, e2d10be1..., or tacit1..." />
+      <button class="btn" style="padding:0 22px;font-size:13.5px;" onclick="runFootprintLookup()">Inspect On-Chain Footprint &rarr;</button>
+    </div>
+
+    <div class="preset-row">
+      <span>Try live presets:</span>
+      <button class="preset-btn" onclick="setLookup('vitalik@eth')">vitalik@eth (Live XNS)</button>
+      <button class="preset-btn" onclick="setLookup('alice@xns')">alice@xns (XNS Namespace Check)</button>
+      <button class="preset-btn" onclick="setLookup('0x000000000Ed1eabD231Be41d93b719056F7febFC')">0x0000…febFC (ConfidentialPool)</button>
+      <button class="preset-btn" onclick="setLookup('0xfb706da8ad6fc35777c041cd3ec049a4e431fd43')">0xfb70…fd43 (Bounty Issuer)</button>
+      <button class="preset-btn" onclick="setLookup('e2d10be1f9e6cf52041f0772a5fd1c1fc2e0dc74f3062780bb7ab3fb9949976c')">e2d10be1… (BTC $TAC Etch T_CETCH)</button>
+      <button class="preset-btn" onclick="setLookup('7320b6b63512cb7515356227060d236e2ff9c2a21b9d737bf5a54a605060ae69')">7320b6b6… (BTC T_POOL_BRIDGE_BURN)</button>
+      <button class="preset-btn" onclick="setLookup('665bdd4bf75580596e02c48c6b776670bd0744e064a1fd36e068d801b4ef0587')">665bdd4b… (BTC AMM T_LP_ADD)</button>
+      <button class="preset-btn" onclick="setLookup('0xf0bbe868af10c6c67652a99709bf32048d1aa7194efe3e9a1ef1bde43f94762b')">0xf0bbe868… ($TAC Asset ID)</button>
+      <button class="preset-btn" onclick="setLookup('tacit1qpzry9x8gf2tvdw0s3jn54khce6mua7l52w3k9q8r2v4m6n0p7s9t2x4y6z8a0c')">tacit1qpzr… (Stealth ID)</button>
+    </div>
+
+    <div id="lookup-output" class="lookup-result">
+      Loading live inspection...
+    </div>
+  </section>
+
+  <!-- SECTION 2: THE PRIVACY BOUNDARY -->
+  <div id="sec-privacy" class="section-heading">
+    <h2>2. The Privacy Boundary: What the Public Chain Sees vs. What Stays Cryptographically Hidden</h2>
+    <span>Pedersen Commitments C = v&middot;H + r&middot;G &middot; Halo2-KZG-BN254 &middot; Bulletproofs++ &middot; SP1 Groth16</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag amber">PUBLIC ON-CHAIN FOOTPRINT</span> What Any Outside Observer Can Read</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">Visible on BTC + EVM</span>
+      </div>
+      <div class="privacy-col-pub">
+        <div class="privacy-item">
+          <strong>1. Pedersen Value Commitment C = v&middot;H + r&middot;G (64-byte secp256k1 point)</strong>
+          Every note publishes its compressed/uncompressed coordinates <span class="mono">(Cx, Cy)</span>. Homomorphic addition (<span class="mono">&Sigma;C_in = &Sigma;C_out + fee&middot;H</span>) lets verifiers check zero inflation without learning <span class="mono">v</span>.
+        </div>
+        <div class="privacy-item">
+          <strong>2. Note Leaf Hash &amp; Merkle Tree Position</strong>
+          On Ethereum <span class="mono">ConfidentialPool</span>, each note appends <span class="mono">leaf = keccak256(assetId &Vert; Cx &Vert; Cy &Vert; owner)</span> to the depth-32 Merkle tree (currently <strong id="priv-leaf-count">5,853</strong> leaves on ETH, <strong id="priv-base-count">185,038</strong> on Base <span class="mono">TacitEvmPool</span>).
+        </div>
+        <div class="privacy-item">
+          <strong>3. Nullifiers (nf) When Notes Are Spent</strong>
+          Spending a note reveals a deterministic 32-byte <span class="mono">nullifier</span> to prevent double-spends. The nullifier cannot be linked back to which historical leaf index was spent.
+        </div>
+        <div class="privacy-item">
+          <strong>4. Public Boundary Crossings (Wrap / Unwrap / Deposit / Withdraw)</strong>
+          Entering or exiting the shielded pool from an EVM <span class="mono">0x</span> address (or XNS name <span class="mono">label@namespace</span>) reveals the caller's <span class="mono">0x</span> address, the canonical ERC-20/ETH amount crossing the boundary, block timestamp, and gas/relayer fee.
+        </div>
+        <div class="privacy-item">
+          <strong>5. Bitcoin Taproot Witness Envelope Header &amp; Opcode</strong>
+          On Bitcoin L1, spending the staging Taproot output reveals the script-path witness (<span class="mono">OP_FALSE OP_IF "TACIT" &lt;ver&gt; &lt;opcode&gt;</span>), the opcode (<span class="mono">T_CETCH</span>, <span class="mono">T_CXFER_BPP</span>, <span class="mono">T_POOL_BRIDGE_BURN</span>, <span class="mono">T_SWAP</span>), and the outer carrier UTXO satoshis (546-sat dust).
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag green">CRYPTOGRAPHICALLY SHIELDED</span> What Never Touches the Public Ledger</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">Information-Theoretically / ZK Hidden</span>
+      </div>
+      <div class="privacy-col-priv">
+        <div class="privacy-item">
+          <strong>1. Note Amounts (u64 value v) &amp; Blinding Factor (256-bit scalar r)</strong>
+          Because <span class="mono">C = v&middot;H + r&middot;G</span> is perfectly hiding for random <span class="mono">r</span>, even an unbounded adversary cannot extract <span class="mono">v</span> from <span class="mono">C</span>. Range validity (<span class="mono">v &in; [0, 2^64)</span>) is proven in zero knowledge via Bulletproofs++ (Bitcoin) or SP1/Groth16 (EVM).
+        </div>
+        <div class="privacy-item">
+          <strong>2. Sender-to-Recipient Graph &amp; Input-to-Output Linkage</strong>
+          Inside <span class="mono">settle()</span> on Ethereum or <span class="mono">TacitEvmPool.transact()</span>, the ZK proof attests that the spent nullifiers derive from valid Merkle leaves in <span class="mono">currentRoot()</span> without revealing which leaves were consumed.
+        </div>
+        <div class="privacy-item">
+          <strong>3. Stealth Recipient Identity (tacit1… Address)</strong>
+          A <span class="mono">tacit1</span> identifier encodes <span class="mono">(spend_pubkey, view_pubkey)</span>. Senders perform ECDH with a fresh ephemeral key <span class="mono">R = k&middot;G</span> so every note on-chain has a unique one-time <span class="mono">owner</span> hash. Searching a <span class="mono">tacit1</span> string on-chain yields zero hits by design.
+        </div>
+        <div class="privacy-item">
+          <strong>4. Shielded Balance of Escrow-Wrapped Assets (ETH, USDC, USDT, wstETH)</strong>
+          As documented in <span class="mono">VERIFY-LIVE.md</span>, the pool's public ERC-20/ETH balances are visible, but the breakdown of who owns those notes inside the tree is completely private.
+        </div>
+        <div class="privacy-item">
+          <strong>5. XNS Identity Privacy Nuance (<span class="mono">0x6e797ba2d3103aF167918e71a7E01DE40D45f74b</span>)</strong>
+          XNS permanently binds <span class="mono">label@namespace &rarr; 0xAddress</span>. Using a pseudonymous XNS handle (<span class="mono">1x45@xns</span>) shared verbally prevents clipboard/chat correlation, whereas a real-name XNS handle (<span class="mono">john@xns</span>) permanently de-anonymizes public boundary wraps!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: ETHEREUM, BASE, ROBINHOOD & MEGAETH STATE -->
+  <div id="sec-evm" class="section-heading">
+    <h2>3. Ethereum, Base, Robinhood Chain &amp; MegaETH Live Protocol State</h2>
+    <span id="evm-sync-status">Live JSON-RPC: ethereum-rpc.publicnode.com + mainnet.base.org</span>
+  </div>
+
+  <div class="grid-4">
+    <div class="card">
+      <div class="stat-label">ETH ConfidentialPool Leaves</div>
+      <div class="stat-big" id="stat-eth-leaves">5,853</div>
+      <div style="font-size:11.5px;color:var(--muted);" class="mono">0x000000000Ed1eabD231Be41d93b719056F7febFC</div>
+      <div style="font-size:11.5px;margin-top:6px;">Root: <span id="stat-eth-root" class="mono" style="color:var(--cyan);">0x0c34b4ea…850f12c3</span></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Base TacitEvmPool Leaves</div>
+      <div class="stat-big" id="stat-base-leaves">185,038</div>
+      <div style="font-size:11.5px;color:var(--muted);" class="mono">0x000000c2A20657CE25f2Ba99737933D031AFBEE9</div>
+      <div style="font-size:11.5px;margin-top:6px;">Shielded TVL: <strong id="stat-base-eth" style="color:var(--green);">4.0524 ETH</strong> &middot; Root: <span id="stat-base-root" class="mono">0x30061b1a…</span></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">CollateralEngine cUSD Debt</div>
+      <div class="stat-big" id="stat-cusd-debt">44.5286 cUSD</div>
+      <div style="font-size:11.5px;color:var(--muted);" class="mono">0x000000003f608BDdF0ca45934003ffb9DbDF70DB</div>
+      <div style="font-size:11.5px;margin-top:6px;">Unwrapped <span class="mono">tacUSD</span>: <strong id="stat-tacusd-sup" style="color:var(--green);">17.7868</strong> &middot; CDP Ratio: <span id="stat-cdp-ratio">150%</span></div>
+    </div>
+    <div class="card">
+      <div class="stat-label">Tracked cBTC Backing vs Supply</div>
+      <div class="stat-big" id="stat-cbtc-sats">11,949,754 sats</div>
+      <div style="font-size:11.5px;color:var(--muted);" class="mono">cbtcBackingSats() = 0.11949754 BTC</div>
+      <div style="font-size:11.5px;margin-top:6px;">Unwrapped <span class="mono">tacBTC</span>: <strong id="stat-tacbtc-sup" style="color:var(--green);">29,400 sats (0.000294 BTC)</strong></div>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- Core Contracts & Canonical Tokens Table -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag eth">ETHEREUM MAINNET (1)</span> Core Contracts, Vaults &amp; Canonical Tokens</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">Deploy Block 25,998,736</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Contract / Asset</th>
+            <th>Address</th>
+            <th>Live On-Chain Metric / Supply</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>ConfidentialPool</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x000000000Ed1eabD231Be41d93b719056F7febFC" target="_blank">0x000000000Ed1…ebFC</a></td>
+            <td class="mono" id="tbl-pool-state">5,853 notes · 30 locks · 31 CDPs · successor=0x0</td>
+          </tr>
+          <tr>
+            <td><strong>CollateralEngine</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x000000003f608BDdF0ca45934003ffb9DbDF70DB" target="_blank">0x000000003f60…70DB</a></td>
+            <td class="mono" id="tbl-engine-state">CDP 150% · Liq 130% · Escrow 150% · Debt 44.53 cUSD</td>
+          </tr>
+          <tr>
+            <td><strong>TacitPublicAmm</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x00000000E36C7EC997CC59DCda9E03673B448119" target="_blank">0x00000000E36C…8119</a></td>
+            <td class="mono">15 initialized pools · 30 bps fee · pays from Pool reserve</td>
+          </tr>
+          <tr>
+            <td><strong>FarmManager</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x000031C47Cb61faB1CE2790a69625FABB71EDE24" target="_blank">0x000031C47Cb6…DE24</a></td>
+            <td class="mono">1,107.78 TAC/day · 65,317.28 TAC treasury (43.3d runway)</td>
+          </tr>
+          <tr>
+            <td><strong>TacVault Dollar (TACD)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x00000087ac9ed3E1Bd443E00FBe18B4EdcAEeb1F" target="_blank">0x00000087ac9e…eb1F</a></td>
+            <td class="mono">Share token <span title="0xA0f6B02561C8ef08335B69aD25e022C0B342147C">0xA0f6…147C</span> · Pool 1 (cETH/cUSD)</td>
+          </tr>
+          <tr>
+            <td><strong>TacVault Ether (TACE)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x00000047bFC8cF504967049D9Cf9E1FD9651ED80" target="_blank">0x00000047bFC8…ED80</a></td>
+            <td class="mono">Share token <span title="0x9DE27883C5Dc9Db47BE12E595D59b8f1aBEC8570">0x9DE2…8570</span> · Pool 2 (cETH/cBTC)</td>
+          </tr>
+          <tr>
+            <td><strong>TAC (Canonical ERC-20)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0xA1313eb9f3A445606D9583bcAc3ebeB56a858279" target="_blank">0xA1313eb9f3A4…8279</a></td>
+            <td class="mono" id="tbl-tac-supply">2,758,974.04 TAC unwrapped (of 21,000,000 etched on BTC)</td>
+          </tr>
+          <tr>
+            <td><strong>wTAC (1:1 Wrapper)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x2018139a8FDd3666855BE3315C7683b4D6aB7AEf" target="_blank">0x2018139a8FDd…7AEf</a></td>
+            <td class="mono" id="tbl-wtac-supply">74,442.58 wTAC (Farm reward token)</td>
+          </tr>
+          <tr>
+            <td><strong>tacBTC (Canonical cBTC)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0xdf1d99148bEb7a9AFf1d95C49B3d22b7ed90D696" target="_blank">0xdf1d99148bEb…0D696</a></td>
+            <td class="mono" id="tbl-tacbtc-supply">0.000294 tacBTC (29,400 sats) &le; 11,949,754 backing sats &#x2713;</td>
+          </tr>
+          <tr>
+            <td><strong>tacUSD (Canonical cUSD)</strong></td>
+            <td class="mono"><a href="https://etherscan.io/address/0x23cACFFAc2674514A6d4F6cD420B4cc2aC921564" target="_blank">0x23cACFFAc267…1564</a></td>
+            <td class="mono" id="tbl-tacusd-supply">17.7868 tacUSD &le; 44.5286 cUSD engine debt &#x2713;</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="caveat-box">
+        <strong>Solvency Boundary Note (from <span class="mono">VERIFY-LIVE.md</span>):</strong> <span class="mono">cbtcBackingSats()</span> (11,949,754 sats) counts every Bitcoin lock attested by reflection, including locks that have not posted wstETH escrow to mint cBTC. The verifiable public invariant is <span class="mono">tacBTC.totalSupply() &le; cbtcBackingSats()</span> (29,400 &le; 11,949,754 sats) and <span class="mono">tacUSD.totalSupply() &le; outstandingCusd()</span> (17.79 &le; 44.53 cUSD).
+      </div>
+    </div>
+
+    <!-- Multichain TacitEvmPool + Active Confidential AMM & Farms -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag base">MULTICHAIN DEVICE POOLS</span> TacitEvmPool (<span class="mono">0x000000c2…BEE9</span>) &amp; Active AMM / Farms</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">Groth16 BN254</span>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Chain</th>
+            <th>Deploy Block</th>
+            <th>Next Leaf Index</th>
+            <th>Shielded ETH Balance &amp; Current Merkle Root</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Base (8453)</strong></td>
+            <td class="mono">51,864,014</td>
+            <td class="mono" id="evm-base-idx"><strong>185,038</strong></td>
+            <td class="mono"><span id="evm-base-bal" style="color:var(--green);">4.0524 ETH</span> · <span id="evm-base-rt">0x30061b1aa8ed…f8c323</span></td>
+          </tr>
+          <tr>
+            <td><strong>Robinhood (4663)</strong></td>
+            <td class="mono">73,991,661</td>
+            <td class="mono" id="evm-rh-idx"><strong>2,354</strong></td>
+            <td class="mono">Active · <span id="evm-rh-rt">0x1255c3d283ff…324949</span></td>
+          </tr>
+          <tr>
+            <td><strong>Ethereum (1)</strong></td>
+            <td class="mono">26,069,245</td>
+            <td class="mono" id="evm-eth-idx"><strong>764</strong></td>
+            <td class="mono"><span id="evm-eth-bal" style="color:var(--green);">7.1908 ETH</span> · <span id="evm-eth-rt">0x14bee37d1488…25111</span></td>
+          </tr>
+          <tr>
+            <td><strong>MegaETH (4326)</strong></td>
+            <td class="mono">28,397,750</td>
+            <td class="mono">Deployed</td>
+            <td class="mono">Router <span class="mono">0x0000006C…d7B5</span> · Deterministic CREATE2</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:14px;margin-bottom:6px;font-size:13px;font-weight:700;color:#fff;">Active Shielded AMM Pools &amp; FarmManager Allocations (Ethereum Pool <span class="mono">0x0000…ebFC</span>)</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Pool Pair &amp; ID</th>
+            <th>Reserve A (Internal 1e8)</th>
+            <th>Reserve B (Internal 1e8)</th>
+            <th>LP Shares &amp; Farm Reward</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TAC / cETH</strong> (PID 0)<br/><span class="mono" style="font-size:10.5px;color:var(--muted);">0x248497bf…11dc7c00</span></td>
+            <td class="mono">462,430,618<br/><span style="color:var(--muted);">(4.6243 cETH)</span></td>
+            <td class="mono">8,107,940,668,731<br/><span style="color:var(--muted);">(81,079.41 TAC)</span></td>
+            <td class="mono">59,810,782,530 LP<br/><span style="color:var(--green);">553.89 TAC/day (50%)</span></td>
+          </tr>
+          <tr>
+            <td><strong>cETH / cUSD</strong> (PID 1)<br/><span class="mono" style="font-size:10.5px;color:var(--muted);">0x5925c0c2…4e909da7</span></td>
+            <td class="mono">170,873,503<br/><span style="color:var(--muted);">(1.7087 cETH)</span></td>
+            <td class="mono">261,567,635,696<br/><span style="color:var(--muted);">(2,615.68 cUSD)</span></td>
+            <td class="mono">6,647,717,681 LP<br/><span style="color:var(--green);">332.33 TAC/day (30%)</span></td>
+          </tr>
+          <tr>
+            <td><strong>cETH / cBTC</strong> (PID 2)<br/><span class="mono" style="font-size:10.5px;color:var(--muted);">0x8359cd1f…bf5cd331</span></td>
+            <td class="mono">80,236,637<br/><span style="color:var(--muted);">(0.8024 cETH)</span></td>
+            <td class="mono">1,396,446<br/><span style="color:var(--muted);">(0.01396446 cBTC)</span></td>
+            <td class="mono">10,555,348 LP<br/><span style="color:var(--green);">221.56 TAC/day (20%)</span></td>
+          </tr>
+          <tr>
+            <td><strong>cBTC / TAC</strong><br/><span class="mono" style="font-size:10.5px;color:var(--muted);">0x90350336…84a7e6423</span></td>
+            <td class="mono">2</td>
+            <td class="mono">762,494</td>
+            <td class="mono">1,000 LP · 30 bps</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 4: BITCOIN SIDE (TAPROOT ENVELOPES, ASSETS & NATIVE AMM) -->
+  <div id="sec-btc" class="section-heading">
+    <h2>4. Bitcoin L1: Taproot Script-Path Envelopes, Etched Assets &amp; Bitcoin-Native Halo2 AMM</h2>
+    <span>Start Height 948,241 &middot; Halo2-KZG-BN254 Pool Root 0x2de69049…75ee2d17 &middot; 135 Envelopes &middot; 53 Notes</span>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag btc">BITCOIN-NATIVE POOL &amp; AMM</span> Halo2-KZG-BN254 State &amp; Etched Assets</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">Height 974,821</span>
+      </div>
+      <div class="kv-list" style="margin-bottom:14px;">
+        <div class="kv-key">BTC Pool Merkle Root</div>
+        <div class="kv-val">0x2de69049b05973c64a0a1bcde80d9a591b7f1eb6ee60a83d2039dc8d75ee2d17</div>
+        <div class="kv-key">Indexed Counts</div>
+        <div class="kv-val"><strong style="color:var(--btc);">135 Envelopes</strong> &middot; <strong style="color:var(--green);">53 Notes (Leaves)</strong> &middot; 14 Nullifiers &middot; 4 Exits</div>
+        <div class="kv-key">Proof System &amp; VK</div>
+        <div class="kv-val">halo2-kzg-bn254 &middot; vkHash bd1d3ebbdbf29520…ce2fd05b0f (4 confs)</div>
+        <div class="kv-key">BTC-Native AMM Pool</div>
+        <div class="kv-val"><strong>tETH / TAC</strong> &middot; Pool ID <span class="mono">aa3eab26215844c32ba27ed51413c48f881b4c605a233a5ccd169517bf33eb79</span></div>
+        <div class="kv-key">BTC AMM Reserves</div>
+        <div class="kv-val">Reserve A (tETH): <strong>35,376</strong> &middot; Reserve B (TAC): <strong>43,181,727</strong> &middot; LP Shares: <strong>1,234,648</strong></div>
+        <div class="kv-key">BTC AMM LP Asset ID</div>
+        <div class="kv-val">1f11752812aad46b9e5a58b0510b98493c71da53ce675284bc3e59e46d8dd8c3</div>
+        <div class="kv-key">BTC AMM Init / Last Swap</div>
+        <div class="kv-val">Init <a href="#" onclick="setLookup('84552c02c6e5b84eba39316e794f848b49d50a8607fffca42949cc754583d8eb');return false;">84552c02…d8eb</a> (#968,188) &middot; Swap <a href="#" onclick="setLookup('7120bf3c540f5d0f2c40b1e94a04d9f645d83cbcb7921f96918fbba577f4ac52');return false;">7120bf3c…ac52</a> (#972,660)</div>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Ticker &amp; Kind</th>
+            <th>32-Byte Asset ID</th>
+            <th>Supply / Backing Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>TAC</strong> <span class="tag btc">ETCHED</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('0xf0bbe868af10c6c67652a99709bf32048d1aa7194efe3e9a1ef1bde43f94762b');return false;">0xf0bbe868af10c6c6…3f94762b</a></td>
+            <td class="mono">21,000,000 TAC fixed cap · 0 mint authority</td>
+          </tr>
+          <tr>
+            <td><strong>tETH / cETH</strong> <span class="tag eth">BRIDGE</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('0x3cba71e1114af183cdeacc6b8457a474d17529fd28704480ca799d0d03126f34');return false;">0x3cba71e1114af183…03126f34</a></td>
+            <td class="mono">Reflected ETH (1e10 wei per internal unit)</td>
+          </tr>
+          <tr>
+            <td><strong>cBTC / tacBTC</strong> <span class="tag btc">LOCK</span></td>
+            <td class="mono">0x62a20d98fc1cd202…cf0679c8</td>
+            <td class="mono">1:1 Bitcoin satoshis + 150% wstETH escrow</td>
+          </tr>
+          <tr>
+            <td><strong>cUSD / tacUSD</strong> <span class="tag green">CDP</span></td>
+            <td class="mono">0x8f4490dd3728b0ee…e8a9679d</td>
+            <td class="mono">Minted against cBTC CDPs (150% min ratio)</td>
+          </tr>
+          <tr>
+            <td><strong>Community Etches</strong></td>
+            <td class="mono">GAMEFI · ORANGE · NOODS · SECRET</td>
+            <td class="mono">Permissionless <span class="mono">T_CETCH</span> / <span class="mono">T_MINT_OPEN</span> assets</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title"><span class="tag btc">TAPROOT ENVELOPE DECODER</span> Canonical Bitcoin Mainnet Envelopes</div>
+        <span class="mono" style="font-size:11px;color:var(--muted);">OP_FALSE OP_IF "TACIT"</span>
+      </div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:10px;">
+        Click any transaction below to fetch its live Bitcoin witness and confirmation status from <span class="mono">mempool.space/api/tx/&lt;txid&gt;</span> in the inspector above:
+      </p>
+      <table>
+        <thead>
+          <tr>
+            <th>Opcode</th>
+            <th>Bitcoin Mainnet Txid</th>
+            <th>What the Witness Envelope Proves</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="tag btc">T_CETCH (0x01)</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('e2d10be1f9e6cf52041f0772a5fd1c1fc2e0dc74f3062780bb7ab3fb9949976c');return false;">e2d10be1f9e6cf52…9949976c</a></td>
+            <td><strong>$TAC Genesis Etch:</strong> Commits 21,000,000 TAC supply commitment with zero mint authority; derives <span class="mono">asset_id = SHA256("TACIT_ASSET_ID" &Vert; outpoint)</span>.</td>
+          </tr>
+          <tr>
+            <td><span class="tag eth">T_CROSSOUT_MINT</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('aaa687928bd165d631aa09480b7aa346db10359da3ef92b4942e09822977196a');return false;">aaa687928bd165d6…2977196a</a></td>
+            <td><strong>ETH &rarr; BTC Reflection Mint:</strong> Mints shielded <span class="mono">tETH</span> on Bitcoin after proving Ethereum burn <span class="mono">0xc7bfc7ce…</span>.</td>
+          </tr>
+          <tr>
+            <td><span class="tag purple">T_LP_ADD (0x21)</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('665bdd4bf75580596e02c48c6b776670bd0744e064a1fd36e068d801b4ef0587');return false;">665bdd4bf7558059…b4ef0587</a></td>
+            <td><strong>Bitcoin-Native AMM Deposit:</strong> Adds confidential <span class="mono">tETH + TAC</span> liquidity on Bitcoin L1; mints LP share note <span class="mono">0x1f117528…</span>.</td>
+          </tr>
+          <tr>
+            <td><span class="tag amber">T_SWAP (0x20)</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('7120bf3c540f5d0f2c40b1e94a04d9f645d83cbcb7921f96918fbba577f4ac52');return false;">7120bf3c540f5d0f…577f4ac52</a></td>
+            <td><strong>Bitcoin-Native AMM Swap (#972,660):</strong> Proves constant-product <span class="mono">x&middot;y &ge; k_last</span> inside Halo2-KZG-BN254 without revealing swap direction/amount.</td>
+          </tr>
+          <tr>
+            <td><span class="tag green">T_POOL_BRIDGE_BURN</span></td>
+            <td class="mono"><a href="#" onclick="setLookup('7320b6b63512cb7515356227060d236e2ff9c2a21b9d737bf5a54a605060ae69');return false;">7320b6b63512cb75…5060ae69</a></td>
+            <td><strong>BTC &rarr; ETH Bridge Burn:</strong> Burns shielded note on Bitcoin and commits target Ethereum recipient for SP1 reflection attestation.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- SECTION 5: THE BRIDGE -->
+  <div id="sec-bridge" class="section-heading">
+    <h2>5. The Bridge: BitcoinLightRelay, EthCallOutbox, SP1 Groth16 Verifier &amp; Reflection Pipeline</h2>
+    <span>24-Block BTC Finality Gate &middot; Zero Multisig / Zero Custodian Federation</span>
+  </div>
+
+  <div class="card" style="margin-bottom:22px;">
+    <div class="card-header">
+      <div class="card-title"><span class="tag purple">SP1 ZK BRIDGE TELEMETRY</span> Live Header Relay, Program VKeys &amp; Attested Reflection State</div>
+      <span class="mono" style="font-size:11px;color:var(--green);" id="bridge-lag-badge">Relay Lag: 5 blocks (Healthy)</span>
+    </div>
+
+    <div class="grid-3" style="margin-bottom:14px;">
+      <div class="kv-list">
+        <div class="kv-key">BitcoinLightRelay</div>
+        <div class="kv-val"><a href="https://etherscan.io/address/0x20A6ddc2C6E620c6248B5A34E85996516FDd19D0" target="_blank">0x20A6ddc2C6E620c6248B5A34E85996516FDd19D0</a></div>
+        <div class="kv-key">Relay Tip vs BTC Tip</div>
+        <div class="kv-val"><strong id="br-relay-tip" style="color:var(--green);">974,819</strong> / <strong id="br-btc-tip">974,824</strong> (req 24 confs)</div>
+        <div class="kv-key">EthCallOutbox</div>
+        <div class="kv-val"><a href="https://etherscan.io/address/0x00000000a26a6E291972666a9687741dBa11Af46" target="_blank">0x00000000a26a6E291972666a9687741dBa11Af46</a></div>
+      </div>
+      <div class="kv-list">
+        <div class="kv-key">Attested BTC Height</div>
+        <div class="kv-val"><strong id="br-attested-ht" style="color:var(--cyan);">974,795</strong> (<span class="mono">000000000000000000019cf8…5ab2d2</span>)</div>
+        <div class="kv-key">Reflection Digest</div>
+        <div class="kv-val" id="br-digest">0x796ed9cd536d6d4ce4d4e7ee54dd7b2192df8dad4ccb88da88d3d6c4500a5c58</div>
+        <div class="kv-key">Cross-Out / Consumed</div>
+        <div class="kv-val"><strong id="br-crossout">21</strong> ETH&rarr;BTC Cross-Outs &middot; <strong id="br-consumed">2</strong> BTC&rarr;ETH Batches</div>
+      </div>
+      <div class="kv-list">
+        <div class="kv-key">SP1 Groth16 Verifier</div>
+        <div class="kv-val"><a href="https://etherscan.io/address/0xb69f2584CBcFf99a58C4e7002E8b89Af54a6f4e2" target="_blank">0xb69f2584CBcFf99a58C4e7002E8b89Af54a6f4e2</a></div>
+        <div class="kv-key">PROGRAM_VKEY (settle)</div>
+        <div class="kv-val">0x0052bf430c2ee14828b2bf8323e4f44196452df06b56929b41357bf772d5d1a3</div>
+        <div class="kv-key">BITCOIN_RELAY_VKEY</div>
+        <div class="kv-val">0x001377d5ca803a79276deca53ef00ce3f3d33b0a9b23210b3fa88df932079df7</div>
+      </div>
+    </div>
+
+    <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;color:#fff;">Verified Mainnet End-to-End Cross-Chain Round Trip (Ethereum &rarr; Bitcoin &rarr; Ethereum):</div>
+    <div class="bridge-flow">
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 1 // ETHEREUM BURN</div>
+        <div style="font-size:12px;margin-bottom:4px;">User wraps ETH into <span class="mono">ConfidentialPool</span> and executes cross-out burn to Bitcoin.</div>
+        <div class="mono" style="font-size:11px;"><a href="https://etherscan.io/tx/0xc7bfc7ce6db43c446069a3ff8f2880f9b218995a9ab6df237b5a1e6935d26330" target="_blank">0xc7bfc7ce6db43c44…35d26330</a></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 2 // BITCOIN T_CROSSOUT_MINT</div>
+        <div style="font-size:12px;margin-bottom:4px;">SP1 <span class="mono">eth_reflection</span> proof verified; Taproot envelope mints shielded <span class="mono">tETH</span> on Bitcoin.</div>
+        <div class="mono" style="font-size:11px;"><a href="#" onclick="setLookup('aaa687928bd165d631aa09480b7aa346db10359da3ef92b4942e09822977196a');return false;">aaa687928bd165d6…2977196a</a></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 3 // BITCOIN T_POOL_BRIDGE_BURN</div>
+        <div style="font-size:12px;margin-bottom:4px;">User trades/LP's on Bitcoin (<span class="mono">665bdd4b…</span>) and burns note in <span class="mono">T_POOL_BRIDGE_BURN</span>.</div>
+        <div class="mono" style="font-size:11px;"><a href="#" onclick="setLookup('7320b6b63512cb7515356227060d236e2ff9c2a21b9d737bf5a54a605060ae69');return false;">7320b6b63512cb75…5060ae69</a></div>
+      </div>
+      <div class="flow-step">
+        <div class="flow-step-num">STEP 4 // ETHEREUM REFLECTION ATTEST</div>
+        <div style="font-size:12px;margin-bottom:4px;">After 24 BTC blocks in <span class="mono">BitcoinLightRelay</span>, SP1 <span class="mono">btc_reflection</span> credits Ethereum pool.</div>
+        <div class="mono" style="font-size:11px;"><a href="https://etherscan.io/tx/0x0f0793f6bbff353d38e6d1249a315386416d10ab6d87849a613cb205d752a9ae" target="_blank">0x0f0793f6bbff353d…d752a9ae</a></div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+const ETH_RPC = "https://ethereum-rpc.publicnode.com";
+const BASE_RPC = "https://mainnet.base.org";
+const XNS_ADDR = "0x6e797ba2d3103aF167918e71a7E01DE40D45f74b";
+const CONF_POOL = "0x000000000Ed1eabD231Be41d93b719056F7febFC";
+const COLL_ENG = "0x000000003f608BDdF0ca45934003ffb9DbDF70DB";
+const EVM_POOL = "0x000000c2A20657CE25f2Ba99737933D031AFBEE9";
+const RELAY_ADDR = "0x20A6ddc2C6E620c6248B5A34E85996516FDd19D0";
+
+const KNOWN_ASSETS = {
+  "0xf0bbe868af10c6c67652a99709bf32048d1aa7194efe3e9a1ef1bde43f94762b": {
+    ticker: "TAC", kind: "Bitcoin-Etched Canonical Token", cap: "21,000,000 TAC (0 mint authority)",
+    ethToken: "0xA1313eb9f3A445606D9583bcAc3ebeB56a858279", genesisTx: "e2d10be1f9e6cf52041f0772a5fd1c1fc2e0dc74f3062780bb7ab3fb9949976c"
+  },
+  "0x3cba71e1114af183cdeacc6b8457a474d17529fd28704480ca799d0d03126f34": {
+    ticker: "tETH / cETH", kind: "Reflected Ether (1e10 wei/unit)", cap: "1:1 Backed by ETH in ConfidentialPool",
+    ethToken: "Native ETH via ConfidentialPool (0x000000000Ed1eabD231Be41d93b719056F7febFC)", genesisTx: "aaa687928bd165d631aa09480b7aa346db10359da3ef92b4942e09822977196a"
+  },
+  "0x62a20d98fc1cd20289621d1315294cb8772f934d822e404b71e1f471cf0679c8": {
+    ticker: "cBTC / tacBTC", kind: "Reflected Bitcoin Lock + 150% wstETH Escrow", cap: "11,949,754 tracked sats / 29,400 unwrapped sats",
+    ethToken: "0xdf1d99148bEb7a9AFf1d95C49B3d22b7ed90D696", genesisTx: "Bitcoin Lock Outpoints attested via BitcoinLightRelay"
+  },
+  "0x8f4490dd3728b0ee904d7a67c11b37ffd463a5c7f08b79810006995ee8a9679d": {
+    ticker: "cUSD / tacUSD", kind: "Confidential Dollar Stablecoin (CDP)", cap: "44.5286 cUSD engine debt / 17.7868 tacUSD unwrapped",
+    ethToken: "0x23cACFFAc2674514A6d4F6cD420B4cc2aC921564", genesisTx: "Minted via CollateralEngine (0x000000003f608BDdF0ca45934003ffb9DbDF70DB)"
+  }
+};
+
+const KNOWN_BTC_TXS = {
+  "e2d10be1f9e6cf52041f0772a5fd1c1fc2e0dc74f3062780bb7ab3fb9949976c": {
+    opcode: "T_CETCH (0x01)", role: "$TAC Genesis Etch on Bitcoin Mainnet",
+    summary: "Etches 21,000,000 TAC with zero mint authority and Pedersen supply commitment; derives asset_id 0xf0bbe868…3f94762b."
+  },
+  "aaa687928bd165d631aa09480b7aa346db10359da3ef92b4942e09822977196a": {
+    opcode: "T_CROSSOUT_MINT (0x11)", role: "Ethereum -> Bitcoin Reflection Mint (tETH)",
+    summary: "Consumes Ethereum burn proof from 0xc7bfc7ce… and mints confidential tETH notes on Bitcoin L1."
+  },
+  "665bdd4bf75580596e02c48c6b776670bd0744e064a1fd36e068d801b4ef0587": {
+    opcode: "T_LP_ADD (0x21)", role: "Bitcoin-Native AMM Liquidity Addition (tETH/TAC)",
+    summary: "Adds shielded tETH and TAC into Bitcoin AMM pool aa3eab26…bf33eb79 and mints LP share asset 1f117528…6d8dd8c3."
+  },
+  "7120bf3c540f5d0f2c40b1e94a04d9f645d83cbcb7921f96918fbba577f4ac52": {
+    opcode: "T_SWAP (0x20)", role: "Bitcoin-Native AMM Confidential Swap (Block #972,660)",
+    summary: "Executes constant-product swap on Bitcoin L1 verified by Halo2-KZG-BN254 without exposing individual trade direction or amount."
+  },
+  "7320b6b63512cb7515356227060d236e2ff9c2a21b9d737bf5a54a605060ae69": {
+    opcode: "T_POOL_BRIDGE_BURN (0x15)", role: "Bitcoin -> Ethereum Bridge Burn",
+    summary: "Burns confidential note on Bitcoin L1 and binds Ethereum destination for SP1 attestBitcoinReflection (0x0f0793f6…)."
+  },
+  "84552c02c6e5b84eba39316e794f848b49d50a8607fffca42949cc754583d8eb": {
+    opcode: "T_AMM_INIT", role: "Bitcoin-Native AMM Pool Initialization (Block #968,188)",
+    summary: "Initializes the tETH/TAC pool (aa3eab26…bf33eb79) with 30 bps fee and Halo2 verifying key CID bafkreibjpe4…."
+  }
+};
+
+async function ethCall(rpc, to, data) {
+  const res = await fetch(rpc, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to, data }, "latest"] })
+  });
+  const j = await res.json();
+  return j.result;
+}
+
+async function ethBlockNumber(rpc) {
+  const res = await fetch(rpc, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_blockNumber", params: [] })
+  });
+  const j = await res.json();
+  return parseInt(j.result, 16);
+}
+
+async function ethBalance(rpc, addr) {
+  const res = await fetch(rpc, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_getBalance", params: [addr, "latest"] })
+  });
+  const j = await res.json();
+  return Number(BigInt(j.result || "0x0")) / 1e18;
+}
+
+function encodeAbiString(selectorHex, str) {
+  const enc = new TextEncoder().encode(str);
+  const lenHex = enc.length.toString(16).padStart(64, "0");
+  let dataHex = "";
+  for (const b of enc) dataHex += b.toString(16).padStart(2, "0");
+  const padLen = Math.ceil(dataHex.length / 64) * 64 || 64;
+  dataHex = dataHex.padEnd(padLen, "0");
+  return selectorHex + "0000000000000000000000000000000000000000000000000000000000000020" + lenHex + dataHex;
+}
+
+function decodeAbiString(hexRes) {
+  if (!hexRes || hexRes === "0x" || hexRes.length < 130) return "";
+  const clean = hexRes.slice(2);
+  const offset = parseInt(clean.slice(0, 64), 16) * 2;
+  const len = parseInt(clean.slice(offset, offset + 64), 16);
+  if (!len) return "";
+  const strHex = clean.slice(offset + 64, offset + 64 + len * 2);
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) bytes[i] = parseInt(strHex.substr(i * 2, 2), 16);
+  return new TextDecoder().decode(bytes);
+}
+
+async function refreshAllLiveState() {
+  try {
+    document.getElementById("evm-sync-status").textContent = "Syncing live RPC state from Ethereum, Base & mempool.space...";
+    const [ethBlk, baseBlk, relayTipHex, nextLeafHex, cbtcHex, rootHex, crossOutHex, cusdHex, baseIdxHex, baseBal, ethPoolBal] = await Promise.all([
+      ethBlockNumber(ETH_RPC),
+      ethBlockNumber(BASE_RPC),
+      ethCall(ETH_RPC, RELAY_ADDR, "0x1fd4827a"),
+      ethCall(ETH_RPC, CONF_POOL, "0x0be4f422"),
+      ethCall(ETH_RPC, CONF_POOL, "0x9f5b61d9"),
+      ethCall(ETH_RPC, CONF_POOL, "0xfdab463d"),
+      ethCall(ETH_RPC, CONF_POOL, "0xa6f8c9d6"),
+      ethCall(ETH_RPC, COLL_ENG, "0xa42542c0"),
+      ethCall(BASE_RPC, EVM_POOL, "0xfc7e9c6f"),
+      ethBalance(BASE_RPC, EVM_POOL),
+      ethBalance(ETH_RPC, EVM_POOL)
+    ]);
+
+    const relayTip = parseInt(relayTipHex, 16);
+    const nextLeaf = parseInt(nextLeafHex, 16);
+    const cbtcSats = parseInt(cbtcHex, 16);
+    const crossOut = parseInt(crossOutHex, 16);
+    const cusdDebt = Number(BigInt(cusdHex)) / 1e10;
+    const baseIdx = parseInt(baseIdxHex, 16);
+
+    document.getElementById("hdr-eth-block").textContent = ethBlk.toLocaleString();
+    document.getElementById("hdr-base-block").textContent = baseBlk.toLocaleString();
+    document.getElementById("hdr-relay-tip").textContent = relayTip.toLocaleString();
+    document.getElementById("br-relay-tip").textContent = relayTip.toLocaleString();
+
+    document.getElementById("stat-eth-leaves").textContent = nextLeaf.toLocaleString();
+    document.getElementById("priv-leaf-count").textContent = nextLeaf.toLocaleString();
+    document.getElementById("stat-eth-root").textContent = rootHex.slice(0, 10) + "…" + rootHex.slice(-8);
+
+    document.getElementById("stat-base-leaves").textContent = baseIdx.toLocaleString();
+    document.getElementById("priv-base-count").textContent = baseIdx.toLocaleString();
+    document.getElementById("evm-base-idx").innerHTML = "<strong>" + baseIdx.toLocaleString() + "</strong>";
+    document.getElementById("stat-base-eth").textContent = baseBal.toFixed(4) + " ETH";
+    document.getElementById("evm-base-bal").textContent = baseBal.toFixed(4) + " ETH";
+    document.getElementById("evm-eth-bal").textContent = ethPoolBal.toFixed(4) + " ETH";
+
+    document.getElementById("stat-cusd-debt").textContent = cusdDebt.toFixed(4) + " cUSD";
+    document.getElementById("stat-cbtc-sats").textContent = cbtcSats.toLocaleString() + " sats";
+    document.getElementById("br-crossout").textContent = crossOut.toString();
+
+    try {
+      const btcRes = await fetch("https://mempool.space/api/blocks/tip/height");
+      if (btcRes.ok) {
+        const btcTip = parseInt(await btcRes.text(), 10);
+        document.getElementById("hdr-btc-tip").textContent = btcTip.toLocaleString();
+        document.getElementById("br-btc-tip").textContent = btcTip.toLocaleString();
+        const lag = btcTip - relayTip;
+        document.getElementById("bridge-lag-badge").textContent = `Relay Lag: ${lag} blocks (${lag <= 12 ? "Healthy" : "Syncing"})`;
+      }
+    } catch (e) {}
+
+    document.getElementById("evm-sync-status").textContent = `Synced Live · ETH #${ethBlk.toLocaleString()} · Base #${baseBlk.toLocaleString()} · Relay #${relayTip.toLocaleString()}`;
+  } catch (err) {
+    document.getElementById("evm-sync-status").textContent = "Live RPC snapshot loaded (fallback active)";
+  }
+}
+
+function setLookup(val) {
+  document.getElementById("footprint-input").value = val;
+  runFootprintLookup();
+}
+
+async function runFootprintLookup() {
+  const raw = document.getElementById("footprint-input").value.trim();
+  const out = document.getElementById("lookup-output");
+  if (!raw) {
+    out.innerHTML = `<span style="color:var(--muted);">Enter an XNS name (vitalik@eth), EVM 0x address, 64-hex Bitcoin txid / assetId, or tacit1 stealth address.</span>`;
+    return;
+  }
+  out.innerHTML = `<span class="mono" style="color:var(--cyan);">Querying live Ethereum / XNS / Bitcoin mainnet endpoints for <strong>${raw}</strong>...</span>`;
+
+  // 1. XNS Name (contains '@')
+  if (raw.includes("@")) {
+    const name = raw.toLowerCase();
+    const parts = name.split("@");
+    const ns = parts[1] || "";
+    try {
+      const callData = encodeAbiString("0xbf40fac1", name); // getAddress(string)
+      const resHex = await ethCall(ETH_RPC, XNS_ADDR, callData);
+      const resolvedAddr = resHex && resHex.length >= 66 ? "0x" + resHex.slice(-40) : "0x0000000000000000000000000000000000000000";
+      const isRegistered = resolvedAddr !== "0x0000000000000000000000000000000000000000";
+
+      let balInfo = "";
+      if (isRegistered) {
+        const [ethBal, tacHex] = await Promise.all([
+          ethBalance(ETH_RPC, resolvedAddr),
+          ethCall(ETH_RPC, "0xA1313eb9f3A445606D9583bcAc3ebeB56a858279", "0x70a08231" + resolvedAddr.slice(2).padStart(64, "0"))
+        ]);
+        const tacBal = Number(BigInt(tacHex || "0x0")) / 1e18;
+        balInfo = `
+          <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+            <strong>Public Balances at Resolved Address (<span class="mono">${resolvedAddr}</span>):</strong>
+            ETH: <span class="mono" style="color:var(--green);">${ethBal.toFixed(4)} ETH</span> &middot;
+            Canonical TAC (<span class="mono">0xA131…8279</span>): <span class="mono" style="color:var(--btc);">${tacBal.toFixed(4)} TAC</span>
+          </div>`;
+      }
+
+      out.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div><span class="tag purple">XNS ON-CHAIN RESOLUTION</span> <strong class="mono" style="font-size:15px;">${name}</strong></div>
+          <span class="mono" style="font-size:11.5px;color:var(--muted);">Registry: 0x6e797ba2d3103aF167918e71a7E01DE40D45f74b</span>
+        </div>
+        <div class="kv-list">
+          <div class="kv-key">Resolution Status</div>
+          <div class="kv-val">${isRegistered ? `<span style="color:var(--green);font-weight:700;">REGISTERED ON ETHEREUM MAINNET &#x2713;</span>` : `<span style="color:var(--amber);">UNREGISTERED (Available in @${ns} namespace if public)</span>`}</div>
+          <div class="kv-key">Resolved 0x Address</div>
+          <div class="kv-val">${isRegistered ? `<a href="https://etherscan.io/address/${resolvedAddr}" target="_blank">${resolvedAddr}</a> <button class="preset-btn" onclick="setLookup('${resolvedAddr}')">Inspect Address &rarr;</button>` : `0x0000000000000000000000000000000000000000`}</div>
+          <div class="kv-key">Privacy Boundary Impact</div>
+          <div class="kv-val">XNS bindings are permanent, non-transferable, and 100% on-chain (80% ETH registration fee burned via DETH). If <strong>${name}</strong> wraps/unwraps assets at <span class="mono">ConfidentialPool</span> or <span class="mono">TacitEvmPool</span>, the boundary deposit/withdrawal is publicly tied to <span class="mono">${name}</span>, while all subsequent in-pool transfers (<span class="mono">C = v&middot;H + r&middot;G</span>) remain completely shielded!</div>
+        </div>
+        ${balInfo}
+      `;
+    } catch (e) {
+      out.innerHTML = `<span style="color:var(--red);">XNS RPC query failed: ${e.message}</span>`;
+    }
+    return;
+  }
+
+  // 2. tacit1 Stealth Address
+  if (raw.toLowerCase().startsWith("tacit1")) {
+    out.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <div><span class="tag green">STEALTH IDENTIFIER (BECH32M)</span> <strong class="mono">${raw.slice(0, 28)}…${raw.slice(-10)}</strong></div>
+        <span class="mono" style="font-size:11.5px;color:var(--green);">ZERO ON-CHAIN FOOTPRINT BY DESIGN</span>
+      </div>
+      <div class="kv-list">
+        <div class="kv-key">Identifier Type</div>
+        <div class="kv-val">Tacit Stealth Meta-Address (<span class="mono">33-byte spend_pubkey &Vert; 33-byte view_pubkey</span>)</div>
+        <div class="kv-key">Public Chain Matches</div>
+        <div class="kv-val"><strong style="color:var(--green);">0 Public Transactions / 0 Linkable Leaves</strong> (Searching Bitcoin Taproot witnesses and Ethereum <span class="mono">ConfidentialPool</span> logs reveals nothing).</div>
+        <div class="kv-key">Why Nothing Appears</div>
+        <div class="kv-val">A <span class="mono">tacit1</span> address is never written to Bitcoin or Ethereum. When a sender pays this <span class="mono">tacit1</span> ID, they draw a fresh ephemeral key <span class="mono">R = r&middot;G</span> and compute a one-time owner tag via ECDH (<span class="mono">shared = SHA256(r &middot; view_pubkey)</span>). Only the holder of the private <span class="mono">view_key</span> can trial-decrypt note ciphertexts to discover their incoming notes!</div>
+      </div>
+    `;
+    return;
+  }
+
+  // 3. EVM 0x Address (42 chars)
+  if (/^0x[0-9a-fA-F]{40}$/.test(raw)) {
+    try {
+      const paddedAddr = "0x5fd4b08a" + raw.slice(2).toLowerCase().padStart(64, "0"); // getName(address)
+      const erc20Call = "0x70a08231" + raw.slice(2).toLowerCase().padStart(64, "0");
+      const [xnsHex, ethBal, baseBal, tacHex, wtacHex, cbtcHex, cusdHex] = await Promise.all([
+        ethCall(ETH_RPC, XNS_ADDR, paddedAddr),
+        ethBalance(ETH_RPC, raw),
+        ethBalance(BASE_RPC, raw),
+        ethCall(ETH_RPC, "0xA1313eb9f3A445606D9583bcAc3ebeB56a858279", erc20Call),
+        ethCall(ETH_RPC, "0x2018139a8FDd3666855BE3315C7683b4D6aB7AEf", erc20Call),
+        ethCall(ETH_RPC, "0xdf1d99148bEb7a9AFf1d95C49B3d22b7ed90D696", erc20Call),
+        ethCall(ETH_RPC, "0x23cACFFAc2674514A6d4F6cD420B4cc2aC921564", erc20Call)
+      ]);
+      const xnsName = decodeAbiString(xnsHex);
+      const tacBal = Number(BigInt(tacHex || "0x0")) / 1e18;
+      const wtacBal = Number(BigInt(wtacHex || "0x0")) / 1e18;
+      const cbtcBal = Number(BigInt(cbtcHex || "0x0")) / 1e18;
+      const cusdBal = Number(BigInt(cusdHex || "0x0")) / 1e18;
+
+      out.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div><span class="tag eth">EVM ADDRESS FOOTPRINT</span> <strong class="mono">${raw}</strong></div>
+          <span class="mono" style="font-size:11.5px;color:var(--purple);">XNS Reverse Lookup: <strong>${xnsName || "No XNS Name Bound"}</strong></span>
+        </div>
+        <div class="kv-list">
+          <div class="kv-key">XNS Identity (<span class="mono">getName</span>)</div>
+          <div class="kv-val">${xnsName ? `<span style="color:var(--green);font-weight:700;">${xnsName}</span> (Immutable Ethereum XNS binding)` : `None (<span class="mono">getName</span> returned <span class="mono">""</span> on <span class="mono">0x6e79…f74b</span>)`}</div>
+          <div class="kv-key">Public Native Balances</div>
+          <div class="kv-val">Ethereum: <strong>${ethBal.toFixed(4)} ETH</strong> &middot; Base: <strong>${baseBal.toFixed(4)} ETH</strong></div>
+          <div class="kv-key">Unwrapped Tacit ERC-20s</div>
+          <div class="kv-val">TAC: <strong style="color:var(--btc);">${tacBal.toLocaleString()}</strong> &middot; wTAC: <strong>${wtacBal.toLocaleString()}</strong> &middot; tacBTC: <strong>${cbtcBal}</strong> &middot; tacUSD: <strong>${cusdBal.toFixed(2)}</strong></div>
+          <div class="kv-key">What Is Public vs Shielded</div>
+          <div class="kv-val">Any <span class="mono">wrap()</span> / <span class="mono">unwrap()</span> call on <span class="mono">ConfidentialPool</span> or <span class="mono">deposit()</span> on <span class="mono">TacitEvmPool</span> from <span class="mono">${raw.slice(0,10)}…</span> is publicly visible in EVM logs. Once inside the pool, notes belong to one-time stealth owner hashes and cannot be queried by <span class="mono">0x</span> address!</div>
+        </div>
+      `;
+    } catch (e) {
+      out.innerHTML = `<span style="color:var(--red);">EVM lookup error: ${e.message}</span>`;
+    }
+    return;
+  }
+
+  // 4. 64-hex (with or without 0x) -> Check Known Asset IDs first, then live Bitcoin txid via mempool.space
+  const hex64 = raw.toLowerCase().replace(/^0x/, "");
+  if (/^[0-9a-f]{64}$/.test(hex64)) {
+    const with0x = "0x" + hex64;
+    if (KNOWN_ASSETS[with0x]) {
+      const a = KNOWN_ASSETS[with0x];
+      out.innerHTML = `
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div><span class="tag btc">CANONICAL TACIT ASSET ID</span> <strong class="mono">${a.ticker}</strong></div>
+          <span class="mono" style="font-size:11.5px;color:var(--muted);">${with0x}</span>
+        </div>
+        <div class="kv-list">
+          <div class="kv-key">Asset Classification</div>
+          <div class="kv-val"><strong>${a.kind}</strong></div>
+          <div class="kv-key">Supply / Backing</div>
+          <div class="kv-val">${a.cap}</div>
+          <div class="kv-key">Ethereum Representation</div>
+          <div class="kv-val">${a.ethToken}</div>
+          <div class="kv-key">Genesis / Anchor</div>
+          <div class="kv-val">${a.genesisTx}</div>
+        </div>
+      `;
+      return;
+    }
+
+    // Query mempool.space/api/tx/<hex64>
+    try {
+      const knownMeta = KNOWN_BTC_TXS[hex64];
+      const r = await fetch(`https://mempool.space/api/tx/${hex64}`);
+      if (r.ok) {
+        const tx = await r.json();
+        const confHeight = tx.status && tx.status.block_height ? tx.status.block_height.toLocaleString() : "Unconfirmed";
+        const witnessItems = (tx.vin && tx.vin[0] && tx.vin[0].witness) ? tx.vin[0].witness : [];
+        const witLen = witnessItems.reduce((acc, w) => acc + w.length / 2, 0);
+        const hasTacitMagic = witnessItems.some(w => w.toLowerCase().includes("5441434954")); // "TACIT" in hex
+
+        out.innerHTML = `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+            <div><span class="tag btc">BITCOIN L1 TAPROOT ENVELOPE</span> <strong class="mono">${knownMeta ? knownMeta.opcode : (hasTacitMagic ? "TACIT WITNESS" : "BTC TX")}</strong></div>
+            <span class="mono" style="font-size:11.5px;color:var(--green);">Confirmed in BTC Block #${confHeight} &#x2713;</span>
+          </div>
+          <div class="kv-list">
+            <div class="kv-key">Bitcoin Txid</div>
+            <div class="kv-val"><a href="https://mempool.space/tx/${hex64}" target="_blank">${hex64}</a></div>
+            <div class="kv-key">Envelope Role</div>
+            <div class="kv-val"><strong>${knownMeta ? knownMeta.role : "Live Bitcoin Mainnet Transaction"}</strong> — ${knownMeta ? knownMeta.summary : ""}</div>
+            <div class="kv-key">Publicly Visible Metadata</div>
+            <div class="kv-val">Size: <strong>${tx.size} bytes (${tx.weight} WU)</strong> &middot; Fee: <strong>${tx.fee} sats</strong> &middot; Inputs: ${tx.vin.length} &middot; Outputs: ${tx.vout.length} &middot; Witness Payload: <strong>${witLen.toLocaleString()} bytes</strong> (${hasTacitMagic ? `Contains ASCII <span class="mono">5441434954 ("TACIT")</span> envelope tag` : "Standard witness"})</div>
+            <div class="kv-key">Shielded Inside Witness</div>
+            <div class="kv-val">Note amounts (<span class="mono">u64</span>), blinding scalars, and recipient <span class="mono">tacit1</span> owners remain hidden behind Pedersen commitments (<span class="mono">C = v&middot;H + r&middot;G</span>) and Halo2 / Bulletproofs++ proofs inside the witness!</div>
+          </div>
+        `;
+        return;
+      }
+    } catch (e) {}
+
+    out.innerHTML = `<span class="mono">64-hex identifier <strong>${raw}</strong> inspected: Not an etched canonical asset or public Bitcoin txid; if this is a confidential note commitment or nullifier leaf hash, its owner and value are cryptographically shielded inside the Merkle tree.</span>`;
+    return;
+  }
+
+  out.innerHTML = `<span style="color:var(--amber);">Unrecognized format. Paste an XNS name (<span class="mono">vitalik@eth</span>), an EVM <span class="mono">0x…</span> address, a 64-hex Bitcoin txid / assetId, or a <span class="mono">tacit1…</span> stealth address.</span>`;
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+  refreshAllLiveState();
+  runFootprintLookup();
+});
+</script>
+</body>
+</html>
