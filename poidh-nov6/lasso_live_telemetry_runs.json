@@ -1,0 +1,558 @@
+[
+  {
+    "label": "1_base_premium_blockNumber_cold",
+    "status_code": 200,
+    "client_rtt_ms": 719.37,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "premium",
+      "x-lasso-balance-usd": "0.0249925",
+      "x-lasso-cu": "1.5",
+      "x-lasso-profile": "premium",
+      "x-lasso-rate-limit-burst": "200",
+      "x-lasso-rate-limit-rps": "100",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1moUHHrh4esIACF_E",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "balanced-fast",
+      "x-lasso-usd": "0.0000075"
+    },
+    "body": {
+      "id": 1,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "head": {
+          "height": 53894787,
+          "age_ms": 136,
+          "advancing": true
+        },
+        "strategy": "balanced-fast",
+        "request_id": "GOV1moUHHrh4esIACF_E",
+        "transport": "http",
+        "chain_id": 8453,
+        "candidate_providers": [
+          "premium/premium_base_6:http",
+          "premium/premium_base_7:http",
+          "premium/premium_base_alchemy_3:http",
+          "premium/premium_base_1:ws",
+          "premium/premium_base_3:http",
+          "premium/premium_base_1:http",
+          "premium/premium_base_4:ws",
+          "premium/premium_base_5:http",
+          "premium/premium_base_4:http",
+          "premium/premium_base_2:http"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 62.773,
+        "lasso_overhead_ms": 2.495,
+        "retries": 0,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "premium_base_6",
+          "protocol": "http"
+        },
+        "selection_latency_ms": 1.018,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 60.278,
+        "profile_id": "premium",
+        "dispatches": 1,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "premium",
+        "applied_strategy": "balanced-fast"
+      },
+      "result": "0x3365e82"
+    }
+  },
+  {
+    "label": "2_base_premium_blockNumber_warm",
+    "status_code": 200,
+    "client_rtt_ms": 108.15,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "premium",
+      "x-lasso-balance-usd": "0.024985",
+      "x-lasso-cu": "1.5",
+      "x-lasso-profile": "premium",
+      "x-lasso-rate-limit-burst": "200",
+      "x-lasso-rate-limit-rps": "100",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1mpK6PD4goToAPnPi",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "balanced-fast",
+      "x-lasso-usd": "0.0000075"
+    },
+    "body": {
+      "id": 2,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "head": {
+          "height": 53894788,
+          "age_ms": 115,
+          "advancing": true
+        },
+        "strategy": "balanced-fast",
+        "request_id": "GOV1mpK6PD4goToAPnPi",
+        "transport": "http",
+        "chain_id": 8453,
+        "candidate_providers": [
+          "premium/premium_base_6:http",
+          "premium/premium_base_7:http",
+          "premium/premium_base_4:http",
+          "premium/premium_base_4:ws",
+          "premium/premium_base_1:ws",
+          "premium/premium_base_1:http",
+          "premium/premium_base_2:http",
+          "premium/premium_base_alchemy_3:http",
+          "premium/premium_base_3:http",
+          "premium/premium_base_5:http"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 16.352,
+        "lasso_overhead_ms": 2.268,
+        "retries": 0,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "premium_base_6",
+          "protocol": "http"
+        },
+        "selection_latency_ms": 1.019,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 14.084,
+        "profile_id": "premium",
+        "dispatches": 1,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "premium",
+        "applied_strategy": "balanced-fast"
+      },
+      "result": "0x3365e84"
+    }
+  },
+  {
+    "label": "3_base_fastest_poidh_bounty529",
+    "status_code": 200,
+    "client_rtt_ms": 226.92,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "premium",
+      "x-lasso-balance-usd": "0.024955",
+      "x-lasso-cu": "6",
+      "x-lasso-profile": "premium",
+      "x-lasso-rate-limit-burst": "200",
+      "x-lasso-rate-limit-rps": "100",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1mprk7-4JOwoAUhXB",
+      "x-lasso-requested-strategy": "fastest",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "fastest",
+      "x-lasso-usd": "0.00003"
+    },
+    "body": {
+      "id": 3,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "head": {
+          "height": 53894789,
+          "age_ms": 124,
+          "advancing": true
+        },
+        "strategy": "fastest",
+        "request_id": "GOV1mprk7-4JOwoAUhXB",
+        "transport": "http",
+        "chain_id": 8453,
+        "candidate_providers": [
+          "premium/premium_base_1:http",
+          "premium/premium_base_1:ws",
+          "premium/premium_base_2:http",
+          "premium/premium_base_3:http",
+          "premium/premium_base_4:http",
+          "premium/premium_base_4:ws",
+          "premium/premium_base_5:http",
+          "premium/premium_base_6:http",
+          "premium/premium_base_7:http",
+          "premium/premium_base_alchemy_3:http"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 102.261,
+        "lasso_overhead_ms": 2.294,
+        "retries": 0,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "premium_base_1",
+          "protocol": "http"
+        },
+        "selection_latency_ms": 0.967,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 99.967,
+        "profile_id": "premium",
+        "dispatches": 1,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "premium",
+        "requested_strategy": "fastest",
+        "applied_strategy": "fastest",
+        "strategy_adjusted": false
+      },
+      "result": "0x0000000000000000000000000000000000000000000000000000000000000211000000000000000000000000dd044684cfa651c491b844ae0e8646ad7c56205b0000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000016000000000000000000000000000000000000000000000000000354a6ba7a180000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000006ae187b900000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000027547279206c6173736f2e736820616e642074656c6c206d65207768617420796f75207468696e6b00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000078849276d20776f726b696e67206f6e206c6173736f2e73682c20616e206f70656e20736f75726365206e6f64652052504320726f7574657220616e6420525043207365727669636520666f722072656c6961626c652c20706572666f726d616e742c20616e6420646565706c7920666c657869626c65206e6f6465205250432e0a0a4c6173736f20676976657320796f7520616e20525043206c61796572207468617420796f752063616e2074756e6520666f7220796f757220757365206361736520616e642072657461696e206465657020636f6e74726f6c206f7665723a204272696e6720796f7572206f776e2070726f7669646572732c20757365207075626c69632070726f7669646572732c20706c756720696e20796f7572206f776e206e6f6465732c206f7220757365206f75722070726f7669646572732e204974206d6f6e69746f727320706572666f726d616e636520616e642073686f777320796f7520686f772070726f7669646572732061726520706572666f726d696e6720696e207265616c2074696d65207768696c6520726f7574696e6720796f7572207265717565737473206f7074696d616c6c7920616e64206661696c696e67206f76657220696e74656c6c6967656e746c7920746f2070726f7465637420796f757220617070732066726f6d206661696c757265732e0a0a596f752063616e207374617274206f6e206672656520656e64706f696e74732c206272696e6720796f7572206f776e2070726f7669646572206b657973207768656e20796f75206e656564206d6f72652c2073656c6620686f73742069742c206f7220706f696e7420796f7572206167656e7420746f206c6173736f2e736820616e64206c6574207468656d2072756e207769746820697420287834303220616e64204d505020737570706f72747320666f72206167656e74206e61746976652061706973290a0a57686f207468697320697320666f722028526571756972656d656e7473290a0a2d20596f75277665207573656420616e205250432070726f7669646572206265666f726520287075626c69632c2066726565206f722070616964290a2d20596f75277665206275696c7420736f6d657468696e67206f6e636861696e2c20666f722066756e206f722070726f66657373696f6e616c6c790a2d20596f752068617665206120476974487562206163636f756e74207769746820636f6d6d69747320696e20746865206c61737420796561720a0a5768617420746f20646f0a0a312e204f6e2061206465736b746f7020286f72206e6f6e2d6d6f62696c6520646576696365293a20676f20746f206c6173736f2e736820616e6420656974686572206d616b6520616e206163636f756e74207468726f756768207468652064617368626f617264206f7220636f7079207468652070726f6d707420746f206d616b6520616e206163636f756e74207769746820796f75206167656e740a322e2053656e6420736f6d65207265616c207265717565737473207468726f7567682069742066726f6d20736f6d657468696e6720796f75277265206275696c64696e672e0a332e205374617220746865207265706f206f6e204769744875622e0a0a486f7720746f207375626d697420286f6e6520636c61696d2065616368290a0a2d20496d6167653a20612073637265656e73686f74206f6620796f7572206167656e74206368617420616e642f6f722061204c6173736f2064617368626f61726420706167652066726f6d20616e792055582f554920796f7520666f756e6420696e746572657374696e672c20636f6e667573696e672c206f7220776f72746820686967686c69676874696e670a2d204465736372697074696f6e3a20796f757220666972737420696d7072657373696f6e732c207768657468657220796f7527642075736520697420666f72207768617420796f75277265206275696c64696e6720616e6420776879206f7220776879206e6f742c20796f7572204769744875622c20616e6420796f75722058206f72204661726361737465722068616e646c650a2d204f7074696f6e616c3a206c696e6b7320746f206d6f72652073637265656e73686f7473206f7220612073686f72742073637265656e207265636f7264696e670a0a5061796f75740a0a5768656e2074686520626f756e747920636c6f7365732c20746865206d6f73742074686f7567687466756c20616e6420696e736967687466756c20666565646261636b2077696e732e2045766572796f6e6520656c73652077686f2073656e64732075736566756c20666565646261636b206765747320612074697020737472616967687420746f2074686569722077616c6c65742e0a0a49276d206c6f6f6b696e6720666f72206275696c6465727320746f2068656c70207368617065204c6173736f2e20496620796f752077616e7420746f206b656570207573696e6720697420616674657220746869732c2049276c6c2073657420796f7520757020776974682066726565206372656469747320616e64206275696c6420666f72207768617420796f75206e6565642061732049206275696c64206d79206561726c7920757365722062617365203a292028646d732077656c636f6d6529000000000000000000000000000000000000000000000000"
+    }
+  },
+  {
+    "label": "4_base_premium_batch3",
+    "status_code": 200,
+    "client_rtt_ms": 218.11,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "premium",
+      "x-lasso-balance-usd": "0.0248875",
+      "x-lasso-cu": "13.5",
+      "x-lasso-profile": "premium",
+      "x-lasso-rate-limit-burst": "200",
+      "x-lasso-rate-limit-rps": "100",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1mqm5TujHatwAPnRC",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "balanced-fast",
+      "x-lasso-usd": "0.0000675"
+    },
+    "body": [
+      {
+        "id": 41,
+        "jsonrpc": "2.0",
+        "result": "0x0000000000000000000000000000000000000000000000000000000000000225",
+        "lasso_meta": {
+          "version": "1.0",
+          "head": {
+            "height": 53894790,
+            "age_ms": 140,
+            "advancing": true
+          },
+          "strategy": "balanced-fast",
+          "request_id": "GOV1mqm5TujHatwAPnRC",
+          "transport": "http",
+          "chain_id": 8453,
+          "candidate_providers": [
+            "premium/premium_base_1:http",
+            "premium/premium_base_6:http",
+            "premium/premium_base_4:http",
+            "premium/premium_base_4:ws",
+            "premium/premium_base_5:http",
+            "premium/premium_base_alchemy_3:http",
+            "premium/premium_base_7:http",
+            "premium/premium_base_3:http",
+            "premium/premium_base_2:http",
+            "premium/premium_base_1:ws"
+          ],
+          "circuit_breaker_state": "closed",
+          "end_to_end_latency_ms": 75.494,
+          "lasso_overhead_ms": 2.651,
+          "retries": 0,
+          "routing_capacity": "shared",
+          "selected_provider": {
+            "id": "premium_base_1",
+            "protocol": "http"
+          },
+          "selection_latency_ms": 1.144,
+          "shared_capacity_denials": 0,
+          "upstream_latency_ms": 72.843,
+          "profile_id": "premium",
+          "dispatches": 1,
+          "execution_safety": "replay_safe",
+          "classified_by": "registry",
+          "region": "lhr",
+          "service_profile_id": "premium",
+          "applied_strategy": "balanced-fast"
+        }
+      },
+      {
+        "id": 42,
+        "jsonrpc": "2.0",
+        "result": "0x0000000000000000000000000000000000000000000000000000000000000000",
+        "lasso_meta": {
+          "version": "1.0",
+          "head": {
+            "height": 53894790,
+            "age_ms": 140,
+            "advancing": true
+          },
+          "strategy": "balanced-fast",
+          "request_id": "GOV1mqm5TujHatwAPnRC",
+          "transport": "http",
+          "chain_id": 8453,
+          "candidate_providers": [
+            "premium/premium_base_1:http",
+            "premium/premium_base_4:ws",
+            "premium/premium_base_2:http",
+            "premium/premium_base_6:http",
+            "premium/premium_base_5:http",
+            "premium/premium_base_4:http",
+            "premium/premium_base_1:ws",
+            "premium/premium_base_7:http",
+            "premium/premium_base_alchemy_3:http",
+            "premium/premium_base_3:http"
+          ],
+          "circuit_breaker_state": "closed",
+          "end_to_end_latency_ms": 75.453,
+          "lasso_overhead_ms": 2.58,
+          "retries": 0,
+          "routing_capacity": "shared",
+          "selected_provider": {
+            "id": "premium_base_1",
+            "protocol": "http"
+          },
+          "selection_latency_ms": 1.001,
+          "shared_capacity_denials": 0,
+          "upstream_latency_ms": 72.873,
+          "profile_id": "premium",
+          "dispatches": 1,
+          "execution_safety": "replay_safe",
+          "classified_by": "registry",
+          "region": "lhr",
+          "service_profile_id": "premium",
+          "applied_strategy": "balanced-fast"
+        }
+      },
+      {
+        "jsonrpc": "2.0",
+        "id": 43,
+        "result": "0x5b8d80",
+        "lasso_meta": {
+          "version": "1.0",
+          "head": {
+            "height": 53894790,
+            "age_ms": 140,
+            "advancing": true
+          },
+          "strategy": "balanced-fast",
+          "request_id": "GOV1mqm5TujHatwAPnRC",
+          "transport": "http",
+          "chain_id": 8453,
+          "candidate_providers": [
+            "premium/premium_base_6:http",
+            "premium/premium_base_7:http",
+            "premium/premium_base_5:http",
+            "premium/premium_base_4:http",
+            "premium/premium_base_3:http",
+            "premium/premium_base_4:ws",
+            "premium/premium_base_1:http",
+            "premium/premium_base_alchemy_3:http",
+            "premium/premium_base_1:ws",
+            "premium/premium_base_2:http"
+          ],
+          "circuit_breaker_state": "closed",
+          "end_to_end_latency_ms": 23.609,
+          "lasso_overhead_ms": 2.821,
+          "retries": 0,
+          "routing_capacity": "shared",
+          "selected_provider": {
+            "id": "premium_base_6",
+            "protocol": "http"
+          },
+          "selection_latency_ms": 1.207,
+          "shared_capacity_denials": 0,
+          "upstream_latency_ms": 20.788,
+          "profile_id": "premium",
+          "dispatches": 1,
+          "execution_safety": "replay_safe",
+          "classified_by": "registry",
+          "region": "lhr",
+          "service_profile_id": "premium",
+          "applied_strategy": "balanced-fast"
+        }
+      }
+    ]
+  },
+  {
+    "label": "5_base_premium_getLogs_5000blocks",
+    "status_code": 200,
+    "client_rtt_ms": 252.73,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "premium",
+      "x-lasso-balance-usd": "0.024775",
+      "x-lasso-cu": "22.5",
+      "x-lasso-profile": "premium",
+      "x-lasso-rate-limit-burst": "200",
+      "x-lasso-rate-limit-rps": "100",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1mrVospL3hqMAPnTC",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "balanced-fast",
+      "x-lasso-usd": "0.0001125"
+    },
+    "body": {
+      "id": 5,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "head": {
+          "height": 53894791,
+          "age_ms": 205,
+          "advancing": true
+        },
+        "strategy": "balanced-fast",
+        "request_id": "GOV1mrVospL3hqMAPnTC",
+        "transport": "http",
+        "chain_id": 8453,
+        "candidate_providers": [
+          "premium/premium_base_5:http",
+          "premium/premium_base_7:http",
+          "premium/premium_base_1:http",
+          "premium/premium_base_2:http",
+          "premium/premium_base_3:http",
+          "premium/premium_base_alchemy_3:http",
+          "premium/premium_base_6:http",
+          "premium/premium_base_1:ws"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 133.61,
+        "lasso_overhead_ms": 4.049,
+        "retries": 1,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "premium_base_7",
+          "protocol": "http"
+        },
+        "selection_latency_ms": 1.133,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 129.561,
+        "profile_id": "premium",
+        "dispatches": 2,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "premium",
+        "applied_strategy": "balanced-fast"
+      },
+      "result": []
+    }
+  },
+  {
+    "label": "6_base_public_strategy_adjusted",
+    "status_code": 200,
+    "client_rtt_ms": 147.21,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "public",
+      "x-lasso-balance-usd": "0.025",
+      "x-lasso-cu": "1",
+      "x-lasso-effective-strategy": "load_balanced",
+      "x-lasso-profile": "public",
+      "x-lasso-rate-limit-burst": "60",
+      "x-lasso-rate-limit-rps": "30",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1msRzwR77hYoAUhcB",
+      "x-lasso-requested-strategy": "fastest",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "load-balanced",
+      "x-lasso-usd": "0"
+    },
+    "body": {
+      "id": 6,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "strategy": "load-balanced",
+        "request_id": "GOV1msRzwR77hYoAUhcB",
+        "transport": "http",
+        "chain_id": 8453,
+        "candidate_providers": [
+          "public/base_publicnode:ws"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 25.82,
+        "lasso_overhead_ms": 2.216,
+        "retries": 0,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "base_publicnode",
+          "protocol": "ws"
+        },
+        "selection_latency_ms": 0.729,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 23.604,
+        "profile_id": "public",
+        "dispatches": 1,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "public",
+        "requested_strategy": "fastest",
+        "applied_strategy": "load-balanced",
+        "strategy_adjusted": true
+      },
+      "result": "0x3365e88"
+    }
+  },
+  {
+    "label": "7_arbitrum_public_poidh_counter",
+    "status_code": 200,
+    "client_rtt_ms": 176.23,
+    "headers": {
+      "content-type": "application/json; charset=utf-8",
+      "x-lasso-access": "public",
+      "x-lasso-balance-usd": "0.025",
+      "x-lasso-cu": "3",
+      "x-lasso-profile": "public",
+      "x-lasso-rate-limit-burst": "60",
+      "x-lasso-rate-limit-rps": "30",
+      "x-lasso-rate-limit-scope": "account-place-node",
+      "x-lasso-region": "lhr",
+      "x-lasso-request-id": "GOV1ms1GL3qVfb8AUhdh",
+      "x-lasso-routing-capacity": "shared",
+      "x-lasso-strategy": "load-balanced",
+      "x-lasso-usd": "0"
+    },
+    "body": {
+      "id": 7,
+      "jsonrpc": "2.0",
+      "lasso_meta": {
+        "version": "1.0",
+        "head": {
+          "height": 521792711,
+          "age_ms": 198,
+          "advancing": true
+        },
+        "strategy": "load-balanced",
+        "request_id": "GOV1ms1GL3qVfb8AUhdh",
+        "transport": "http",
+        "chain_id": 42161,
+        "candidate_providers": [
+          "public/arbitrum_drpc:ws"
+        ],
+        "circuit_breaker_state": "closed",
+        "end_to_end_latency_ms": 58.303,
+        "lasso_overhead_ms": 2.339,
+        "retries": 0,
+        "routing_capacity": "shared",
+        "selected_provider": {
+          "id": "arbitrum_drpc",
+          "protocol": "ws"
+        },
+        "selection_latency_ms": 0.678,
+        "shared_capacity_denials": 0,
+        "upstream_latency_ms": 55.964,
+        "profile_id": "public",
+        "dispatches": 1,
+        "execution_safety": "replay_safe",
+        "classified_by": "registry",
+        "region": "lhr",
+        "service_profile_id": "public",
+        "applied_strategy": "load-balanced"
+      },
+      "result": "0x00000000000000000000000000000000000000000000000000000000000000a0"
+    }
+  }
+]
