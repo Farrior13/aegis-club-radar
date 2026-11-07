@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kuza (Nimiq Pay Mini App) — Bug & Improvement Report (POIDH Base #552)</title>
+<style>
+  :root { --bg: #111428; --card: #1b2040; --gold: #e9b22a; --text: #eef1ff; --mute: #a8b2d8; --bad: #ff7b7b; --good: #6ee7b7; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.55; padding: 28px 18px 60px; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  header { border-bottom: 2px solid var(--gold); padding-bottom: 18px; margin-bottom: 24px; }
+  h1 { margin: 0 0 8px; font-size: 28px; color: #fff; }
+  h2 { color: var(--gold); margin-top: 28px; font-size: 21px; }
+  h3 { color: #fff; margin: 16px 0 8px; font-size: 17px; }
+  .sub { color: var(--mute); font-size: 15px; }
+  .card { background: var(--card); border: 1px solid #30396e; border-radius: 14px; padding: 20px; margin-bottom: 20px; }
+  .badge { display: inline-block; padding: 3px 9px; border-radius: 99px; font-size: 12px; font-weight: 700; margin-right: 8px; }
+  .crit { background: rgba(255,123,123,0.18); color: var(--bad); border: 1px solid var(--bad); }
+  .high { background: rgba(233,178,42,0.18); color: var(--gold); border: 1px solid var(--gold); }
+  .med { background: rgba(110,231,183,0.16); color: var(--good); border: 1px solid var(--good); }
+  .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin: 18px 0; }
+  .shot { background: #151936; border: 1px solid #2b3363; border-radius: 12px; padding: 10px; text-align: center; }
+  .shot img { max-width: 100%; border-radius: 8px; border: 1px solid #353e78; }
+  .shot p { margin: 8px 0 2px; font-size: 13px; color: var(--mute); }
+  pre { background: #0d1021; border: 1px solid #2a315c; border-radius: 8px; padding: 12px; overflow-x: auto; font-size: 13px; color: #d6deff; }
+  code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; color: #ffd97d; }
+  .hero-img { width: 100%; border-radius: 12px; border: 2px solid var(--gold); margin-bottom: 20px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Kuza (Nimiq Pay Mini App) — Bug &amp; Improvement Report</h1>
+    <div class="sub">Prepared for Swift Bot Labs (<code>POIDH Base #552</code> / Web ID <code>#1538</code>) · Tested live against <code>https://kuza.swiftbotlab.workers.dev/</code> &amp; <code>swiftbotlabs/kuza@main</code> · All 7 known items in <code>README.md</code> ("What is still rough") excluded.</div>
+  </header>
+
+  <img class="hero-img" src="poidh_552_kuza_audit_proof.png" alt="Kuza Composite Audit Proof">
+
+  <h2>1. Live Walkthrough Screenshots (All 4 Required Flows)</h2>
+  <div class="grid">
+    <div class="shot"><img src="shot1_goal_plan.png" alt="Goal & Weekly Plan"><p><b>Flow 1:</b> Goal with 250 NIM/week plan &amp; 500 NIM staked (50% milestone).</p></div>
+    <div class="shot"><img src="shot2_invite_sheet.png" alt="Invite Friends Sheet"><p><b>Flow 2a:</b> Share / Invite sheet &amp; QR code (<code>?j=mNQ49...</code>).</p></div>
+    <div class="shot"><img src="shot7_invite_jar_view.png" alt="Group Jar View"><p><b>Flow 2b:</b> Opening the Invite Link (<code>viewJar</code>).</p></div>
+    <div class="shot"><img src="shot3_rewards_sheet.png" alt="Rewards Sheet"><p><b>Flow 3:</b> Opening the Rewards Sheet (<code>sheetRewards</code>).</p></div>
+    <div class="shot"><img src="shot4_use_money_sheet.png" alt="Use the money"><p><b>Flow 4:</b> Reaching 100% &amp; walking through "Use the money" (<code>sheetUse</code>).</p></div>
+    <div class="shot"><img src="shot8_post_unstake_contradiction.png" alt="Post-unstake contradiction"><p><b>Live Bug #1 &amp; #2 Proof:</b> Ring drops to 0% &amp; Set aside=0 while "Your NIM is back in your wallet" + "Done this week"!</p></div>
+    <div class="shot"><img src="shot9_rewards_contradiction_after_unstake.png" alt="Rewards contradiction"><p><b>Live Bug #3 Proof:</b> Goal tile shows <code>+0 NIM</code>, but tapping it opens Rewards Sheet showing <code>25 NIM</code>!</p></div>
+    <div class="shot"><img src="shot10_home_nudge_contradiction.png" alt="Home nudge contradiction"><p><b>Live Bug #1b Proof:</b> Home screen nudges user to re-stake the unstaked NIM back into the same goal!</p></div>
+  </div>
+
+  <h2>2. Novel Reproducible Bugs (Not Listed in README)</h2>
+
+  <div class="card">
+    <h3><span class="badge crit">CRITICAL · BUG #1</span> "Use the Money" Unstake-to-Spend Accounting Desync &amp; Negative Wallet Balance Swallow (<code>js/goals.js#L62–L79</code>, <code>js/app.js#L620–L638</code>)</h3>
+    <p><b>Steps to Reproduce:</b></p>
+    <ol>
+      <li>Create a goal (e.g. <code>Emergency Hardware</code>, target <code>1,000 NIM</code>, plan <code>250 NIM/week</code>) and stake <code>1,000 NIM</code> to reach <code>100%</code>.</li>
+      <li>Tap <b>Use the money</b> (<code>sheetUse</code>) &rarr; <b>Start taking it out</b> &rarr; complete cooling-off and release the stake back to the wallet (<code>finishWithdrawIfDone()</code>).</li>
+      <li>Observe the Goal screen (<code>shot8_post_unstake_contradiction.png</code>), the Home screen (<code>shot10_home_nudge_contradiction.png</code>), and then pay a Lightning invoice (<code>sheetPayInvoice</code>).</li>
+    </ol>
+    <p><b>What Happened vs. Expected:</b></p>
+    <ul>
+      <li><b>On the Goal screen:</b> <code>finishWithdrawIfDone()</code> appends <code>{ kind: 'withdraw', luna: inGoal, status: 'ok' }</code>. In <code>G.parts(goal)</code> (<code>js/goals.js#L73</code>), <code>case 'withdraw': stake -= e.luna; break;</code> subtracts from <code>stake</code> <b>without adding to <code>wallet</code></b> (whereas <code>case 'spend': wallet -= e.luna;</code> subtracts Lightning invoice payments from <code>wallet</code>!). Consequently, while <code>spentCard</code> displays <i>"Your NIM is back in your wallet — Spend it, or mark this goal as done"</i>, the Goal Hero ring immediately collapses from <b>100% to 0% (0 of 1,000 NIM)</b> and the <b>Set aside (inWallet)</b> tile shows <b>0 NIM</b>.</li>
+      <li><b>On the Home screen:</b> Because <code>notedInWallet()</code> is <code>0 NIM</code> while <code>R.spendable</code> increased by <code>+1,000 NIM</code>, <code>walletCard()</code> (<code>walletNudge</code>) immediately pops up telling the user they have unassigned NIM in their wallet and nudges them to <b>"Add to Emergency Hardware"</b> (re-staking into the exact goal they just unstaked from to spend!).</li>
+      <li><b>When paying a Lightning invoice (<code>spend</code>):</b> Because <code>parts(goal)</code> only calls <code>Math.max(0, wallet)</code> <i>after</i> the entry loop finishes (line 78) rather than clamping at each step, recording <code>{ kind: 'spend', luna: tx.value }</code> when <code>wallet === 0</code> drives the internal <code>wallet</code> accumulator to <code>-1,000 NIM</code>. If the user later receives a friend's gift or sets aside NIM in that goal, the negative accumulator silently swallows the new deposit!</li>
+    </ul>
+    <pre><code>// Fix in js/goals.js (parts):
+export function parts(goal) {
+  let stake = 0, wallet = 0, gifts = 0;
+  for (const e of counted(goal)) {
+    switch (e.kind) {
+      case 'aside': wallet += e.luna; break;
+      case 'gift': wallet += e.luna; gifts += e.luna; break;
+      case 'stake': stake += e.luna; wallet = Math.max(0, wallet - (e.fromWallet || 0)); break;
+      case 'assign': stake += e.luna; break;
+      case 'withdraw': stake = Math.max(0, stake - e.luna); wallet += e.luna; break; // NIM moved from stake back to wallet until spent or marked done
+      case 'move': stake = Math.max(0, stake - e.luna); break;
+      case 'spend': wallet = Math.max(0, wallet - e.luna); break;
+    }
+  }
+  return { stake, wallet, gifts };
+}</code></pre>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge high">HIGH · BUG #2</span> Weekly/Monthly Plan &amp; Streak Ignore <code>withdraw</code>, <code>move</code>, <code>spend</code>, and <code>assign</code> (<code>js/goals.js#L141–L150</code>)</h3>
+    <p><b>Steps to Reproduce:</b></p>
+    <ol>
+      <li>Create Goal A with a <code>250 NIM/week</code> plan, save <code>1,000 NIM</code>, and then either unstake it (<code>withdraw</code>) or click <b>Start the next goal</b> (<code>sheetGoal</code> with <code>from: goalA</code>, which pushes <code>kind: 'move'</code> to Goal A and <code>kind: 'assign'</code> to Goal B).</li>
+    </ol>
+    <p><b>What Happened vs. Expected:</b></p>
+    <ul>
+      <li><code>savedByWeek(goal)</code> only inspects <code>['aside', 'stake', 'gift']</code>. After unstaking all <code>1,000 NIM</code> from Goal A, Goal A sits at <b>0% (0 of 1,000 NIM)</b>, yet both the Goal screen and Home card display <b>"This week's saving is done · 1 week in a row"</b> and paint the week bar gold!</li>
+      <li>Conversely, when a user reaches Goal A and rolls their stake into Goal B via <b>Start the next goal</b> (<code>kind: 'assign'</code>), <code>savedByWeek(goalB)</code> ignores <code>assign</code>, so Goal B immediately demands a full weekly deposit in Week 1 even though the user just funded it with their rolled-over stake.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge high">HIGH · BUG #3</span> Rewards Sheet (<code>sheetRewards</code>) vs. Goal Earned Tile Contradiction After Unstaking (<code>js/app.js#L156–L175</code>, <code>js/rewards.js#L57–L90</code>)</h3>
+    <p><b>Steps to Reproduce:</b></p>
+    <ol>
+      <li>Stake into a goal, accrue staking rewards (e.g. <code>+25 NIM</code>), and unstake (either partially across two goals or completely).</li>
+      <li>Look at the Goal's <b>Earned</b> tile (<code>[data-rig="goal-earned"]</code>) and tap it to open the Rewards Sheet (<code>shot9_rewards_contradiction_after_unstake.png</code>).</li>
+    </ol>
+    <p><b>What Happened vs. Expected:</b></p>
+    <ul>
+      <li>On the Goal screen, <code>goalProgress(goal).earned</code> calls <code>G.earnedTotal(R.staker?.total ?? 0, st.baseline ?? 0, st.goals)</code>, which drops to <b><code>+0 NIM</code></b> once unstaked.</li>
+      <li>However, the Home hero card (<code>earnedLabel()</code>) and <code>sheetRewards</code> use <code>R.proven.earned</code> (which computes <code>total - (staked - unstaked)</code>, where both <code>total</code> and <code>net</code> drop by the unstaked amount, leaving withdrawn rewards in <code>earned</code>!) or fall back to <code>RW.seenTotal(st.rewards)</code> when <code>R.staker</code> becomes <code>null</code>. Thus the user taps a button labeled <b><code>Earned: +0 NIM</code></b> and a sheet pops open saying <b><code>Earned so far: 25 NIM</code></b>!</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge med">MEDIUM · BUG #4</span> Monthly Plan Created on Day 29–31 Skips Short Months &amp; Misaligns <code>periodStart</code> vs. <code>periodOf</code> (<code>js/goals.js#L112–L130</code>)</h3>
+    <p><b>Steps to Reproduce:</b></p>
+    <ol>
+      <li>Create a goal with a <b>Monthly</b> plan on the 31st of a month (e.g. <code>createdAt = Date.UTC(2026, 0, 31)</code>, Jan 31).</li>
+      <li>Evaluate <code>periodOf(goal, at)</code> and <code>periodStart(goal, 1)</code> across February and March 1–3.</li>
+    </ol>
+    <p><b>What Happened vs. Expected:</b></p>
+    <ul>
+      <li>In <code>periodOf(goal, at)</code>, <code>if (d.getUTCDate() &lt; s.getUTCDate()) m -= 1;</code> is <b>always true for every day of February</b> (Feb 1–28 all have <code>getUTCDate() &lt; 31</code>), so <code>m</code> stays <code>0</code> for all of February (a 59-day first period!).</li>
+      <li>Meanwhile, <code>periodStart(goal, 1)</code> calls <code>d.setUTCMonth(d.getUTCMonth() + 1)</code> on Jan 31, which overflows JS Date into <b>March 3</b>. Then on <b>March 1</b> (<code>getUTCMonth() === 2</code>), <code>periodOf</code> jumps to <code>m = 2 - 1 = 1</code>, two days <i>before</i> <code>periodStart(goal, 1)</code> (March 3)! Clamping the anchor day to the number of days in the target month resolves both bugs cleanly.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h3><span class="badge med">MEDIUM · BUG #5</span> Demo Mode Invite Link (<code>I.inviteLink</code>) Strips <code>?demo=1</code> &amp; Queries Mainnet RPC for Pretend Address (<code>js/invite.js#L18–L26</code>)</h3>
+    <p><b>Steps to Reproduce:</b></p>
+    <ol>
+      <li>Open <code>https://kuza.swiftbotlab.workers.dev/?demo=1</code>, create a goal, tap <b>Invite friends</b>, and copy the invite link: <code>https://kuza.swiftbotlab.workers.dev/?j=mNQ49DEMA0000...</code>.</li>
+      <li>Open that copied URL in a browser tab.</li>
+    </ol>
+    <p><b>What Happened vs. Expected:</b></p>
+    <ul>
+      <li>Because <code>I.inviteLink</code> strips <code>demo=1</code> from the URL while encoding the demo wallet address <code>NQ49 DEMA 0000 ... 0001</code>, opening the shared link exits Demo mode, renders the external browser landing (<code>viewInvite</code>), and queries Mainnet RPC (<code>rpc.nimiqwatch.com</code>) for the pretend address. Appending <code>&amp;demo=1</code> when <code>DEMO</code> is active (or detecting the <code>DEMA</code> address prefix) lets testers and users try the full friend-gifting flow seamlessly.</li>
+    </ul>
+  </div>
+
+  <h2>3. Concrete Product &amp; UX Improvements</h2>
+  <div class="card">
+    <ul>
+      <li><b>1. One-Tap "Mark Goal as Done" inside the Lightning Payment Confirmation (<code>sheetPayInvoice</code>):</b> When a user pays a Lightning invoice from a reached goal (<code>js/app.js#L1450–L1463</code>), Kuza closes the sheet and returns to the Goal screen without offering to close/archive the goal. Adding a checkbox or post-payment prompt (<i>"Mark goal as done?"</i>) completes the lifecycle in one tap.</li>
+      <li><b>2. Auto-Select "Take All" When Staking Rewards Create Sub-100 NIM Dust on Full Goal Withdrawal (<code>sheetWithdraw</code>):</b> Because staking rewards accrue continuously, a user who staked <code>1,000 NIM</code> and opens <code>sheetWithdraw</code> while a few Luna of rewards arrive mid-session can hit the <code>rem &gt; 0 &amp;&amp; rem &lt; MIN_STAKE</code> (<code>dust</code>) warning if <code>R.staker.active</code> ticks up between opening the sheet and tapping submit. Auto-snapping withdrawals within <code>MIN_STAKE</code> of <code>staker.active</code> to <code>staker.active</code> prevents unnecessary dust friction.</li>
+      <li><b>3. Show Net Gift Progress vs. Owner Savings on <code>viewJar</code>:</b> When a friend opens an invite link (<code>?j=...</code>), <code>jarHero</code> shows <code>0 of 1,000 NIM so far</code> (counting gifts only). If the owner has already staked <code>800 NIM</code> of their own money and only needs <code>200 NIM</code> from friends, encoding an optional remaining/gifts target or clarifying <i>"0 NIM gifted by friends toward a 1,000 NIM goal"</i> makes small contributions feel much more impactful.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>
