@@ -1,0 +1,4 @@
+chain,address,label,nfts_held
+mainnet,0xE731dFadBFf20542E10D09D26Fc71445C70d4232,poidh v3 core contract (claim NFT escrow),380
+arbitrum,0x5555Fa783936C260f77385b4E153B9725feF1719,poidh v3 core contract (claim NFT escrow),619
+base,0x5555Fa783936C260f77385b4E153B9725feF1719,poidh v3 core contract (claim NFT escrow),3859

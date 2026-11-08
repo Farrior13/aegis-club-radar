@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>POIDH v3 Cross-Chain Wallet Activity & Reconciliation (Ethereum · Arbitrum · Base)</title>
+  <style>
+    :root {
+      --bg: #0d1117; --card: #161b22; --border: #30363d;
+      --text: #f0f6fc; --muted: #8b949e; --green: #3fb950; --blue: #58a6ff; --purple: #bc8cff;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 32px 24px; background: var(--bg); color: var(--text); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.5; }
+    .container { max-width: 1440px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 28px; }
+    .sub { color: var(--muted); margin-bottom: 24px; font-size: 15px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+    .btn { display: inline-block; padding: 10px 16px; border-radius: 8px; font-weight: 600; text-decoration: none; font-size: 14px; border: 1px solid var(--border); background: var(--card); color: var(--text); }
+    .btn.primary { background: #238636; border-color: #2ea043; color: #fff; }
+    .btn.blue { background: #1f6feb; border-color: #388bfd; color: #fff; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+    .card h3 { margin: 0 0 6px; font-size: 18px; }
+    .big { font-size: 28px; font-weight: 700; font-family: Consolas, monospace; margin: 8px 0; }
+    .mono { font-family: Consolas, monospace; font-size: 13px; }
+    .bold { font-weight: 700; }
+    .green { color: var(--green); }
+    .blue { color: var(--blue); }
+    .banner { background: #122d1f; border: 1px solid #2ea043; border-radius: 12px; padding: 16px 20px; margin-bottom: 24px; }
+    table { width: 100%; border-collapse: collapse; background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+    th, td { padding: 9px 10px; text-align: left; border-bottom: 1px solid var(--border); font-size: 13px; }
+    th { background: #21262d; color: var(--blue); font-weight: 600; position: sticky; top: 0; }
+    input[type="search"] { width: 100%; max-width: 460px; padding: 10px 14px; border-radius: 8px; border: 1px solid var(--border); background: var(--card); color: var(--text); font-size: 14px; margin-bottom: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>POIDH v3 Cross-Chain Wallet Activity & Reconciliation Dataset</h1>
+    <div class="sub">Ethereum Mainnet (<code>0xe731...4232</code>) · Arbitrum One (<code>0x5555...1719</code>) · Base Mainnet (<code>0x5555...1719</code>) — Dual-Verified via Raw <code>eth_getLogs</code> Replay + <code>Multicall3</code> State Pinning</div>
+
+    <div class="btns">
+      <a class="btn primary" href="poidh_v3_wallets.csv" download>⬇ Download poidh_v3_wallets.csv (All 1,438 Wallets — Latest Head)</a>
+      <a class="btn blue" href="poidh_v3_wallets_active_only.csv" download>⬇ Download poidh_v3_wallets_active_only.csv (470 Non-Zero Wallets)</a>
+      <a class="btn" href="poidh_v3_wallets_cutoff_1794110394.csv" download>⬇ Download Cutoff Snapshot CSV (1,436 Wallets @ Block 1794110394)</a>
+      <a class="btn" href="completed_bounties.csv" download>⬇ Download completed_bounties.csv (All 462 Completed Bounties)</a>
+      <a class="btn" href="poidh_v3_protocol_nft_holdings.csv" download>⬇ Download Protocol Escrow NFTs CSV (4,858 NFTs)</a>
+      <a class="btn" href="https://github.com/Farrior13/poidh-v3-ethereum-data" target="_blank">🔗 View Public GitHub Repository & Reproducible Scripts</a>
+    </div>
+
+    <div class="banner">
+      <div class="mono bold" style="font-size:16px;">✓ 100% CROSS-CHAIN RECONCILIATION VERIFIED: 12.37235944252522 ETH Paid == 12.37235944252522 ETH Earned (12,372,359,442,525,220,000 wei) across all 462 Completed Bounties</div>
+      <div style="color:var(--green); font-size:14px; margin-top:4px;">Includes both the Latest Head Snapshot (blocks 26,371,283 / 522,413,361 / 54,821,853 including Base Bounty #490 Claim #4165) and the exact Bounty #554 Creation Cutoff Snapshot (unix 1794110394: 461 bounties, 12.37015944252522 ETH).</div>
+    </div>
+
+    <div class="grid">
+      <div class="card">
+        <h3 class="blue">Ethereum Mainnet (Block #26,371,283)</h3>
+        <div class="big">3.381683 ETH</div>
+        <div class="mono">Paid == Earned · 27 Completed Bounties (1 solo / 26 open, 19 via vote)</div>
+        <div class="mono green">✓ Reconciled (0 wei diff) · 2.5% Fee: 0.084542075 ETH</div>
+        <div class="mono" style="margin-top:6px;">NFTs: <b>27</b> in user wallets + <b>380</b> in protocol escrow (407 minted)</div>
+      </div>
+      <div class="card">
+        <h3 style="color:var(--purple);">Arbitrum One (Block #522,413,361)</h3>
+        <div class="big">2.969041 ETH</div>
+        <div class="mono">Paid == Earned · 113 Completed Bounties (14 solo / 99 open, 37 via vote)</div>
+        <div class="mono green">✓ Reconciled (0 wei diff) · 2.5% Fee: 0.074226025 ETH</div>
+        <div class="mono" style="margin-top:6px;">NFTs: <b>113</b> in user wallets + <b>619</b> in protocol escrow (732 minted)</div>
+      </div>
+      <div class="card">
+        <h3 class="green">Base Mainnet (Block #54,821,853)</h3>
+        <div class="big">6.02163544252522 ETH</div>
+        <div class="mono">Paid == Earned · 322 Completed Bounties (36 solo / 286 open, 178 via vote)</div>
+        <div class="mono green">✓ Reconciled (0 wei diff) · 2.5% Fee: 0.1505408860631305 ETH</div>
+        <div class="mono" style="margin-top:6px;">NFTs: <b>322</b> in user wallets + <b>3,859</b> in protocol escrow (4,181 minted)</div>
+      </div>
+    </div>
+
+    <h2>Scorecard Visual Summary</h2>
+    <p><img src="poidh_554_scorecard.png" alt="POIDH v3 Wallet Activity Scorecard" style="max-width:100%; border-radius:12px; border:1px solid var(--border);" /></p>
+
+    <h2>Top 100 Wallets Preview (Full 1,438 Rows in CSV)</h2>
+    <input type="search" id="q" placeholder="Filter preview by wallet address (0x...)" oninput="filterRows()" />
+    <div style="overflow-x:auto;">
+      <table id="wtable">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>wallet_address</th>
+            <th>eth_paid_mainnet</th>
+            <th>eth_paid_arbitrum</th>
+            <th>eth_paid_base</th>
+            <th>eth_paid_total</th>
+            <th>eth_earned_mainnet</th>
+            <th>eth_earned_arbitrum</th>
+            <th>eth_earned_base</th>
+            <th>eth_earned_total</th>
+            <th>nfts_held_mainnet</th>
+            <th>nfts_held_arbitrum</th>
+            <th>nfts_held_base</th>
+            <th>nfts_held_total</th>
+          </tr>
+        </thead>
+        <tbody>
+          
+    <tr>
+      <td>1</td>
+      <td class="mono">0x4200aC338555e25B20C8fe82AC02a5C8D4e5A5b4</td>
+      <td class="mono">0.3104</td>
+      <td class="mono">0.72411</td>
+      <td class="mono">1.68539</td>
+      <td class="mono bold green">2.7199</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">5</td>
+      <td class="mono">31</td>
+      <td class="mono">35</td>
+      <td class="mono bold">71</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="mono">0xc5f2D0A16146725ce62F8f67D7036650E7Bf6218</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">1.53575</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">1.53575</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td class="mono">0xc0163E58648b247c143023CFB26C2BAA42C9d9A9</td>
+      <td class="mono">0</td>
+      <td class="mono">1.527</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">1.527</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td class="mono">0xcebe15E70Fad55c0245d9Add4d13CC1F91236ade</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0045</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.0045</td>
+      <td class="mono">0</td>
+      <td class="mono">1.3735</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">1.3735</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td class="mono">0x10Fc964Ef70C8467CD8c53e9eD9347422AdF96A8</td>
+      <td class="mono">0.055</td>
+      <td class="mono">0.499727</td>
+      <td class="mono">0.61336</td>
+      <td class="mono bold green">1.168087</td>
+      <td class="mono">0.001</td>
+      <td class="mono">0.001</td>
+      <td class="mono">0.001</td>
+      <td class="mono bold blue">0.003</td>
+      <td class="mono">3</td>
+      <td class="mono">42</td>
+      <td class="mono">73</td>
+      <td class="mono bold">118</td>
+    </tr>
+    <tr>
+      <td>6</td>
+      <td class="mono">0x34aA3F359A9D614239015126635CE7732c18fDF3</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>7</td>
+      <td class="mono">0xd8dA6BF26964aF9D7eEd9e03E53415D37aA96045</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>8</td>
+      <td class="mono">0x293F2BB46d15d6a496300a03E68EbA21e17A0213</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0025</td>
+      <td class="mono">0.6619</td>
+      <td class="mono bold blue">0.6644</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>9</td>
+      <td class="mono">0x864405169b4AbCa041dDa945D2a028703B70585A</td>
+      <td class="mono">0.35</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.35</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>10</td>
+      <td class="mono">0xc5412b7a321F4b459B534257cC6C1C3C03e18eAD</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.00603</td>
+      <td class="mono bold green">0.00603</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0255</td>
+      <td class="mono">0.308133</td>
+      <td class="mono bold blue">0.333633</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>11</td>
+      <td class="mono">0xB31Faa5c1D581C70F4b6ed095c944936cBd2a357</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.255936</td>
+      <td class="mono bold blue">0.255936</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>12</td>
+      <td class="mono">0xF143db60A0B1cBb8076B786Eb6635b93f18db744</td>
+      <td class="mono">0</td>
+      <td class="mono">0.001</td>
+      <td class="mono">0.254533</td>
+      <td class="mono bold green">0.255533</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>13</td>
+      <td class="mono">0xdb83ae472F108049828dB5F429595c4B5932B62C</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.25284</td>
+      <td class="mono bold green">0.25284</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>14</td>
+      <td class="mono">0x4143EA98CE4EA7376a6b0aBd53F98541B4D3cA83</td>
+      <td class="mono">0.20256789</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.20256789</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>15</td>
+      <td class="mono">0xF35ff7426e2dbE06305e71EaeE7E038E6dbAC620</td>
+      <td class="mono">0.055</td>
+      <td class="mono">0</td>
+      <td class="mono">0.127</td>
+      <td class="mono bold green">0.182</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>16</td>
+      <td class="mono">0x2640475196E195F17dAE266F9F4B36B0B971e84c</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.175</td>
+      <td class="mono bold blue">0.175</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>17</td>
+      <td class="mono">0x5Dc697f2799bd232CaD2d479C379fF305b699F9b</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1697</td>
+      <td class="mono bold blue">0.1697</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>18</td>
+      <td class="mono">0x11dF38A0939330c9BeA6161C7142577DDE386285</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.16663514252522</td>
+      <td class="mono bold blue">0.16663514252522</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>19</td>
+      <td class="mono">0x3f07d412Da0aa3615bD92a496C73823a64370ec9</td>
+      <td class="mono">0</td>
+      <td class="mono">0.001</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.001</td>
+      <td class="mono">0</td>
+      <td class="mono">0.07655</td>
+      <td class="mono">0.083</td>
+      <td class="mono bold blue">0.15955</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>20</td>
+      <td class="mono">0x34eE74b7709134F7BAbE4D337c0D38d25573f05f</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.16</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.16</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>21</td>
+      <td class="mono">0x291C35340d86eF7ae8BAb84570bc8c3e23018E09</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.159237</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.159237</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>22</td>
+      <td class="mono">0x8D171FD565E0963359C82911a087B42ce62108F3</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.156</td>
+      <td class="mono bold green">0.156</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">3</td>
+      <td class="mono bold">3</td>
+    </tr>
+    <tr>
+      <td>23</td>
+      <td class="mono">0x8d2a253a5885806AA14e583C80c8833A904fb252</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1529</td>
+      <td class="mono bold blue">0.1529</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>24</td>
+      <td class="mono">0xc698865c38eC12b475AA55764d447566dd54c758</td>
+      <td class="mono">0</td>
+      <td class="mono">0.007</td>
+      <td class="mono">0.0222</td>
+      <td class="mono bold green">0.0292</td>
+      <td class="mono">0</td>
+      <td class="mono">0.117744</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.117744</td>
+      <td class="mono">0</td>
+      <td class="mono">7</td>
+      <td class="mono">1</td>
+      <td class="mono bold">8</td>
+    </tr>
+    <tr>
+      <td>25</td>
+      <td class="mono">0xa247539785eAD7040D0e070A2F24A320B193AdFE</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1425</td>
+      <td class="mono bold green">0.1425</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>26</td>
+      <td class="mono">0x9141945df11cE179AE46E40CB5Fab505EE83459C</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1425</td>
+      <td class="mono bold blue">0.1425</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>27</td>
+      <td class="mono">0x5bE8bDC96c423f265FC589ff8611e4C72eE94dCA</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.13035</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.13035</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>28</td>
+      <td class="mono">0x9d5017B9B62f423F9e69309a74C7ab4e7Bf6a105</td>
+      <td class="mono">0.12583511</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.12583511</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>29</td>
+      <td class="mono">0x5F94cEA3015d03baca8d31A935A0e9ba668bd5B8</td>
+      <td class="mono">0.125777</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.125777</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>30</td>
+      <td class="mono">0x7876d1aa2fb4311f84a9Ba0A8cf816Eb5223d5c2</td>
+      <td class="mono">0.125</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.125</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>31</td>
+      <td class="mono">0x7234c36A71ec237c2Ae7698e8916e0735001E9Af</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0794</td>
+      <td class="mono bold green">0.0794</td>
+      <td class="mono">0.044</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.044</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">10</td>
+      <td class="mono bold">10</td>
+    </tr>
+    <tr>
+      <td>32</td>
+      <td class="mono">0x7171477f255e82901e716Bea4F9898c2540cca8C</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0047</td>
+      <td class="mono bold green">0.0047</td>
+      <td class="mono">0.0082</td>
+      <td class="mono">0.1085</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.1167</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>33</td>
+      <td class="mono">0x4A34e383a986127C5C6e184ADfC7DACFC1e56D0e</td>
+      <td class="mono">0.099</td>
+      <td class="mono">0</td>
+      <td class="mono">0.015</td>
+      <td class="mono bold green">0.114</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>34</td>
+      <td class="mono">0x96E9025466a3e15DC2c3B28C1c6C71523a93f703</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.001</td>
+      <td class="mono bold green">0.001</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1122</td>
+      <td class="mono bold blue">0.1122</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>35</td>
+      <td class="mono">0xaf21D6F747367Fe099B59b75f0Ab8f4fee4B35B9</td>
+      <td class="mono">0.00516</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.00516</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0515</td>
+      <td class="mono">0.0555</td>
+      <td class="mono bold blue">0.107</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>36</td>
+      <td class="mono">0xc42166E9e1Ed7b053781Be452eebBE86a13C8Cdb</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.001</td>
+      <td class="mono bold green">0.001</td>
+      <td class="mono">0.1065</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.1065</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">3</td>
+      <td class="mono bold">3</td>
+    </tr>
+    <tr>
+      <td>37</td>
+      <td class="mono">0x4a90F5A9401158a70F5F307aa13fF0B0E62c7B51</td>
+      <td class="mono">0.0027</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0175</td>
+      <td class="mono bold green">0.0202</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.08533</td>
+      <td class="mono bold blue">0.08533</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>38</td>
+      <td class="mono">0x1a0A2aBDfE9B18CB81B894d70C08d410ba415c85</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.10489</td>
+      <td class="mono bold blue">0.10489</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>39</td>
+      <td class="mono">0x07bd76c8f0A6d3c5b54780f30EbD5A612527B278</td>
+      <td class="mono">0.04152</td>
+      <td class="mono">0.01213</td>
+      <td class="mono">0.0299</td>
+      <td class="mono bold green">0.08355</td>
+      <td class="mono">0</td>
+      <td class="mono">0.011</td>
+      <td class="mono">0.006</td>
+      <td class="mono bold blue">0.017</td>
+      <td class="mono">2</td>
+      <td class="mono">4</td>
+      <td class="mono">6</td>
+      <td class="mono bold">12</td>
+    </tr>
+    <tr>
+      <td>40</td>
+      <td class="mono">0x15C6a4bF9023Ad20C51CbEa9992A5bcCf83F3e7B</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.01538</td>
+      <td class="mono">0.033147</td>
+      <td class="mono">0.05197</td>
+      <td class="mono bold blue">0.100497</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>41</td>
+      <td class="mono">0xed416De2D92A8df357d941BcF45f80AF20F28a62</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1</td>
+      <td class="mono bold green">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">4</td>
+      <td class="mono bold">4</td>
+    </tr>
+    <tr>
+      <td>42</td>
+      <td class="mono">0x1C0Aa8cCD568d90d61659F060D1bFb1e6f855A20</td>
+      <td class="mono">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>43</td>
+      <td class="mono">0x0Ac7D72e0A6E21Fb840BBd07f2b8d0763B65c2C3</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.0845</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0155</td>
+      <td class="mono bold blue">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>44</td>
+      <td class="mono">0x8E8c3669Cdb509BA77068E001A5cC722De365809</td>
+      <td class="mono">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>45</td>
+      <td class="mono">0xab60c2f93DC4D93a9d5B24e53aD5337DA8A08931</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1</td>
+      <td class="mono bold green">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>46</td>
+      <td class="mono">0xc2Fef20F7E8D2Dd0d27F56389C731BD2943aA43d</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.1</td>
+      <td class="mono bold green">0.1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>47</td>
+      <td class="mono">0x9353CC2583356cE6eA8f92E239D7C9Eb8412ACAF</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0123</td>
+      <td class="mono">0.015</td>
+      <td class="mono bold green">0.0273</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.06977</td>
+      <td class="mono bold blue">0.06977</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>48</td>
+      <td class="mono">0x6a48ADE3bE3F9f0b8B4c9af61Bb654A219311699</td>
+      <td class="mono">0.001</td>
+      <td class="mono">0</td>
+      <td class="mono">0.04</td>
+      <td class="mono bold green">0.041</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0555</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.0555</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>49</td>
+      <td class="mono">0xCBA18CB7e7c043B378E21607fa104F1767442348</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0935</td>
+      <td class="mono bold blue">0.0935</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>50</td>
+      <td class="mono">0x2Ef1AB6019eE0DAC8b8da8a42122a3080126B248</td>
+      <td class="mono">0.0933</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.0933</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>51</td>
+      <td class="mono">0x3bf6Cc96D9743c9101D318c0006C5F5ADA51cFae</td>
+      <td class="mono">0.0912</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.0912</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>52</td>
+      <td class="mono">0x9AA0F215076c1404a92A5B7219512F4c57d7029b</td>
+      <td class="mono">0.0115</td>
+      <td class="mono">0.009444</td>
+      <td class="mono">0.06974</td>
+      <td class="mono bold green">0.090684</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">3</td>
+      <td class="mono">0</td>
+      <td class="mono">3</td>
+      <td class="mono bold">6</td>
+    </tr>
+    <tr>
+      <td>53</td>
+      <td class="mono">0x8009faBD3364f57d1f6c26B4d3860B73Ea048243</td>
+      <td class="mono">0.0893</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.0893</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>54</td>
+      <td class="mono">0x602B266C542fE43C55d39beD3DbC55e6BdaceEbD</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0498</td>
+      <td class="mono">0.0371</td>
+      <td class="mono bold blue">0.0869</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>55</td>
+      <td class="mono">0x59733c7Cd78d08dAb90368aD2cc09c8c81f097C0</td>
+      <td class="mono">0.009</td>
+      <td class="mono">0</td>
+      <td class="mono">0.015422</td>
+      <td class="mono bold green">0.024422</td>
+      <td class="mono">0.06</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.06</td>
+      <td class="mono">2</td>
+      <td class="mono">0</td>
+      <td class="mono">5</td>
+      <td class="mono bold">7</td>
+    </tr>
+    <tr>
+      <td>56</td>
+      <td class="mono">0x6555acd8a03d0B1CCB57D6FD8ab60414540812b7</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.084</td>
+      <td class="mono bold blue">0.084</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>57</td>
+      <td class="mono">0x2080699A61eFa9f6947901eD2361d4d0Eea0fcA4</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0831</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.0831</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>58</td>
+      <td class="mono">0x7CcCfF608dDA05bde58a28B6910Ebc78AEA1D4a3</td>
+      <td class="mono">0</td>
+      <td class="mono">0.008</td>
+      <td class="mono">0.025</td>
+      <td class="mono bold green">0.033</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0477</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.0477</td>
+      <td class="mono">0</td>
+      <td class="mono">5</td>
+      <td class="mono">2</td>
+      <td class="mono bold">7</td>
+    </tr>
+    <tr>
+      <td>59</td>
+      <td class="mono">0xD34f10E24Ecce7b943aAa859460d7cd5C6E50F60</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0035</td>
+      <td class="mono bold green">0.0035</td>
+      <td class="mono">0.030566</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0407</td>
+      <td class="mono bold blue">0.071266</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">3</td>
+      <td class="mono bold">3</td>
+    </tr>
+    <tr>
+      <td>60</td>
+      <td class="mono">0x6Dce11cC9Bba17d3c1Ef60C26f0958300BB06953</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.00263</td>
+      <td class="mono bold green">0.00263</td>
+      <td class="mono">0.011</td>
+      <td class="mono">0.0035</td>
+      <td class="mono">0.0535</td>
+      <td class="mono bold blue">0.068</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>61</td>
+      <td class="mono">0xa179413c4EaC732668c368258a7Ef1D6195c2dE5</td>
+      <td class="mono">0.01</td>
+      <td class="mono">0</td>
+      <td class="mono">0.06</td>
+      <td class="mono bold green">0.07</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>62</td>
+      <td class="mono">0x745793487A535EF578567DE19bE1B1E011589Bac</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.07</td>
+      <td class="mono bold green">0.07</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>63</td>
+      <td class="mono">0x8A5827705d3c7a27864086e2D10F7E0F233e6B7A</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.07</td>
+      <td class="mono bold blue">0.07</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>64</td>
+      <td class="mono">0x934C80e3a3e9136eE3558950385B66Ac5e7D9bf7</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.045</td>
+      <td class="mono bold green">0.045</td>
+      <td class="mono">0.0245</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.0245</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>65</td>
+      <td class="mono">0x6851Dc5E4af118F7821BB798DF56866cd1491F43</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05727</td>
+      <td class="mono bold green">0.05727</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.012</td>
+      <td class="mono bold blue">0.012</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>66</td>
+      <td class="mono">0xACB10c106B9CCC38C0e036B5E1A1c591cefa57E6</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.001</td>
+      <td class="mono bold green">0.001</td>
+      <td class="mono">0</td>
+      <td class="mono">0.06562</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.06562</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>67</td>
+      <td class="mono">0xc143cF8515B87EA88d8dB8a9892639B5046CF81c</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0246</td>
+      <td class="mono">0.0405</td>
+      <td class="mono bold blue">0.0651</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>68</td>
+      <td class="mono">0x463B1E8E78B28027b423Ea6f00695f01a84EFe72</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.01</td>
+      <td class="mono bold green">0.01</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.055</td>
+      <td class="mono bold blue">0.055</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">3</td>
+      <td class="mono bold">3</td>
+    </tr>
+    <tr>
+      <td>69</td>
+      <td class="mono">0xF391EEe70A073e9ed53EBD3b9836644FdFe1b7C6</td>
+      <td class="mono">0</td>
+      <td class="mono">0.012</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.012</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.053</td>
+      <td class="mono bold blue">0.053</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>70</td>
+      <td class="mono">0x4a308AfbC09bcded2f6EdB67EFE379b3748C4bD7</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0065</td>
+      <td class="mono bold green">0.0065</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.056</td>
+      <td class="mono bold blue">0.056</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>71</td>
+      <td class="mono">0xaff2Ab518BA962bD19f67E75ceb9dE4Da350B327</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.062</td>
+      <td class="mono bold blue">0.062</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>72</td>
+      <td class="mono">0x388e3daF94fAB496f01B78AaC25305D715aa24ff</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.013</td>
+      <td class="mono">0.0476</td>
+      <td class="mono bold blue">0.0606</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>73</td>
+      <td class="mono">0xAFfc9f6684899EFb628d90323ADf4d838D2EA740</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.06</td>
+      <td class="mono bold green">0.06</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">2</td>
+      <td class="mono bold">2</td>
+    </tr>
+    <tr>
+      <td>74</td>
+      <td class="mono">0x459e213D8B5E79d706aB22b945e3aF983d51BC4C</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.06</td>
+      <td class="mono bold green">0.06</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>75</td>
+      <td class="mono">0x7ECB7A50d54d7985604DBa59aCB2705B0871572C</td>
+      <td class="mono">0.047</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0125</td>
+      <td class="mono bold green">0.0595</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>76</td>
+      <td class="mono">0xF8AFD3FB383a4822D2a6Fe4C9e55273BaDFD861C</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0587</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.0587</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>77</td>
+      <td class="mono">0x038d38bd805B457a19fC8B2D1fE5f4E3F460a479</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.058</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.058</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>78</td>
+      <td class="mono">0xE423b19262EA8FBC68aB9509f90080aB6aA1930B</td>
+      <td class="mono">0.016</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.016</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.041</td>
+      <td class="mono bold blue">0.041</td>
+      <td class="mono">1</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>79</td>
+      <td class="mono">0xCecAaCdd987688CcDff15C775CbA8E5ba63A8460</td>
+      <td class="mono">0.002</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0026</td>
+      <td class="mono bold green">0.0046</td>
+      <td class="mono">0.01069</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0411</td>
+      <td class="mono bold blue">0.05179</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>80</td>
+      <td class="mono">0xBC9B50d89aF9Cbeff1652f8e4b2052E12Efe9915</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0559</td>
+      <td class="mono bold blue">0.0559</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>81</td>
+      <td class="mono">0xdF5A944221cA0590a70d9754bcb78e0BEF9cdAC2</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.034</td>
+      <td class="mono">0.02135</td>
+      <td class="mono bold blue">0.05535</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>82</td>
+      <td class="mono">0x61486F0596832Fa1DA15638D367c2B55f3c18833</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.055</td>
+      <td class="mono bold blue">0.055</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>83</td>
+      <td class="mono">0x849e1C0b2460979D2f7c77B87b90C65C70406421</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.055</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0.055</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>84</td>
+      <td class="mono">0xb3a54d49F039B1f5Ee50ED644D84551194cfeC82</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0535</td>
+      <td class="mono bold blue">0.0535</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>85</td>
+      <td class="mono">0xD175f211eC6afb9a582ed67b8c2e650952acA82F</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.052</td>
+      <td class="mono bold blue">0.052</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>86</td>
+      <td class="mono">0x76B9d2F5Bf9b1661F135C230F3Bc7843AdA11bc7</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0.0025</td>
+      <td class="mono">0.007</td>
+      <td class="mono">0.0424</td>
+      <td class="mono bold blue">0.0519</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>87</td>
+      <td class="mono">0xf24C399622E8763573592EB1cd639b174098A768</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.051</td>
+      <td class="mono bold green">0.051</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>88</td>
+      <td class="mono">0xC1aeBd6f0D37611d744B0ECD0865984fbCb4B4c4</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>89</td>
+      <td class="mono">0xe06e62Ff50de48b7AA4fC442964e4c2c0F1Fd5e6</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">1</td>
+      <td class="mono bold">1</td>
+    </tr>
+    <tr>
+      <td>90</td>
+      <td class="mono">0x37041eC29c9c687bc9cbf1eD5b324abCf6078fcd</td>
+      <td class="mono">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>91</td>
+      <td class="mono">0x442C463eb4778C1a576d5b80927B429756723014</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>92</td>
+      <td class="mono">0x4bF88042De0220647ACb314AF3c5F310AEc3bCc0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>93</td>
+      <td class="mono">0x54e7dD73cDD08f40D2bc1284E20DCE6180FC1D62</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold blue">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>94</td>
+      <td class="mono">0xAEa967842976600f1a9256DcA207E4435A6f0112</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.05</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>95</td>
+      <td class="mono">0xDbee1Cfa10D706ef868dd2dFF97246Cb6d73B530</td>
+      <td class="mono">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0.05</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>96</td>
+      <td class="mono">0x70f77A5C36eBD667360F6021bF4A95d274B3530e</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.049984</td>
+      <td class="mono bold blue">0.049984</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>97</td>
+      <td class="mono">0xFB706da8Ad6fc35777c041cD3Ec049a4e431fd43</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.0495</td>
+      <td class="mono bold blue">0.0495</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>98</td>
+      <td class="mono">0xc2926A39d0d88d4c1B227DeB933022F1492e818C</td>
+      <td class="mono">0</td>
+      <td class="mono">0.004</td>
+      <td class="mono">0.045</td>
+      <td class="mono bold green">0.049</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold blue">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>99</td>
+      <td class="mono">0xe0124637e1887Ed32f93400d8E15ff9f105E6861</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.007</td>
+      <td class="mono">0.0418</td>
+      <td class="mono bold blue">0.0488</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+    <tr>
+      <td>100</td>
+      <td class="mono">0xBADcF0ba3A26B25c5436bc048f1032304c30B8Dd</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold green">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0.04861</td>
+      <td class="mono bold blue">0.04861</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono">0</td>
+      <td class="mono bold">0</td>
+    </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    function filterRows() {
+      const q = document.getElementById('q').value.toLowerCase();
+      document.querySelectorAll('#wtable tbody tr').forEach(tr => {
+        tr.style.display = tr.innerText.toLowerCase().includes(q) ? '' : 'none';
+      });
+    }
+  </script>
+</body>
+</html>
