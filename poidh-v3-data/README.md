@@ -1,7 +1,7 @@
 # POIDH v3 Cross-Chain Wallet Activity & Reconciliation Dataset (Ethereum Mainnet, Arbitrum, Base)
 
 **Live Interactive Explorer & 1-Click CSV Downloads:** [https://farrior13.github.io/aegis-club-radar/poidh-v3-data/](https://farrior13.github.io/aegis-club-radar/poidh-v3-data/)  
-**Public GitHub Repository:** [https://github.com/Farrior13/poidh-v3-ethereum-data](https://github.com/Farrior13/poidh-v3-ethereum-data)
+**Public GitHub Repository:** [https://github.com/Farrior13/aegis-club-radar/tree/main/poidh-v3-data](https://github.com/Farrior13/aegis-club-radar/tree/main/poidh-v3-data)
 
 ---
 
